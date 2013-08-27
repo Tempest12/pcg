@@ -7,7 +7,7 @@
 #include <math.h>
 
 //Project Imports
-#include "StringLib.hpp"
+#include "util/StringLib.hpp"
 
 //Author: Shane del Solar
 //version: 2.0
@@ -25,6 +25,8 @@
  * 			hash
  *			keyEquals
  */
+
+using namespace Util;
 
 /************************************************************************/
 /* Variables:                                                           */
