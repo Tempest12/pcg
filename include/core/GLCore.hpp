@@ -18,12 +18,18 @@ namespace Core
 	public:
 		static void init(int argc, char** argv);
 		static void draw(void);
+
+		static void functionKeys(int keyCode, int positionX, int positionY);
+		static void keyboard(unsigned char keyCode, int positionX, int positionY);
+		static void mouseClick(int buttonCode, int buttonState, int positionX, int positionY);
+		static void mouseMove(int positionX, int positionY);
+
 		static void runLoop(void);
 		static void uninit(void);
 		static void update(float time);
 
 	protected:
-	private:
+	private:  
 	};
 }
 #endif
