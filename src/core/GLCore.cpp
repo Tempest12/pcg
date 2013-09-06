@@ -69,8 +69,8 @@ void GLCore::init(int argc, char** argv)
 	//Register Window callback functions:
 	glutDisplayFunc(GLCore::runLoop);
 	glutKeyboardFunc(GLCore::keyboard);
-	glutMouseFunc(GLCore::mouseClick);
-	glutMotionFunc(GLCore::mouseMove);
+	//glutMouseFunc(GLCore::mouseClick);
+	//glutMotionFunc(GLCore::mouseMove);
 	glutSpecialFunc(GLCore::functionKeys);
 
 	//Set variables:
@@ -222,7 +222,7 @@ void GLCore::keyboard(unsigned char keyCode, int positionX, int positionY)
 	}
 }
 
-void GLCore::mouseClick(int buttonCode, int buttonState, int positionX, int positionY)
+/*void GLCore::mouseClick(int buttonCode, int buttonState, int positionX, int positionY)
 {
 	if(buttonCode == GLUT_LEFT_BUTTON)
 	{
@@ -257,7 +257,7 @@ void GLCore::mouseMove(int positionX, int positionY)
 
 	oldMouseX = positionX;
 	oldMouseY = positionY;
-}
+}*/
 
 void GLCore::runLoop(void)
 {
