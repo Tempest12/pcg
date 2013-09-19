@@ -16,9 +16,10 @@ add_executable(pcg ${SOURCES})
 
 find_package(OpenGL REQUIRED)
 find_package(GLUT REQUIRED)
+find_package(GLEW REQUIRED)
 
 include_directories(${OPENGL_INCLUDE_DIRS} ${GLUT_INCLUDE_DIRS})
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
-target_link_libraries(pcg ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES})
+target_link_libraries(pcg ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${GLEW_LIBRARIES})

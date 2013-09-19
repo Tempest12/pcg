@@ -6,3 +6,28 @@ section window
 	init_x 350
 	init_y 350
 }
+
+section tileGeneration
+{
+	random_bump 17.0f
+
+	tile_size 25.0f
+}
+
+section camera
+{
+	walk_speed 0.95f
+	run_speed 1.5f
+
+	pan_speed 0.55f
+}
+
+section controls
+{
+	forward w
+	right d
+	backward s 
+	left a 
+	up q 
+	down e
+}

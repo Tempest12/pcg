@@ -22,7 +22,8 @@ namespace Core
 		static void functionKeys(int keyCode, int positionX, int positionY);
 		static void keyboard(unsigned char keyCode, int positionX, int positionY);
 		static void mouseClick(int buttonCode, int buttonState, int positionX, int positionY);
-		static void mouseMove(int positionX, int positionY);
+		static void mouseActiveMotion(int positionX, int positionY);
+		static void mousePassiveMotion(int positionX, int positionY);
 
 		static void runLoop(void);
 		static void uninit(void);

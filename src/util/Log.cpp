@@ -10,6 +10,9 @@
 //Author Shane del Solar
 //Version 2.00.ss
 
+//Namespace this codes belongs to:
+using namespace Util;
+
 static int currentLevel;
 static bool status;
 static std::ofstream file;

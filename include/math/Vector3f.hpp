@@ -1,6 +1,8 @@
 #ifndef _VECTOR3F_HPP
 #define _VECTOR3F_HPP
 
+#include <iostream>
+
 #include <math.h>
 
 namespace Math
@@ -54,16 +56,24 @@ namespace Math
 		void zeroOut(void);
 
 		//Additional operators:
-		inline bool operator == (Vector3f* that)
+		bool operator==(Vector3f* that)
 		{
 			return ((this -> x == that -> x) && (this -> y == that -> y) && (this -> z == that -> z));
 		} 
 		
+	    /*std::ostream&  operator<<(std::ostream& stream)
+		{
+			stream << "X: " << this->x << " Y: " << this->y << " Z: " << this->z << std::endl;
+
+			return stream;
+		}*/
 
 		//Static Functions:
 	protected:
 	private:
 	};
 }
+
+std::ostream&  operator<<(std::ostream& stream, const Math::Vector3f& vect);
 
 #endif

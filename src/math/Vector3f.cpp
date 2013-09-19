@@ -66,6 +66,13 @@ void Vector3f::add(Vector3f& that)
 	this->z += that.z;
 }
 
+void Vector3f::copy(Vector3f* that)
+{
+	this->x = that->x;
+	this->y = that->y;
+	this->z = that->z;
+}
+
 void Vector3f::crossProduct(Vector3f* that)
 {
 	float tempX = this->y * that->z - this->z * that->y;
@@ -137,4 +144,10 @@ void Vector3f::zeroOut(void)
 	this->x = 0.0f;
 	this->y = 0.0f;
 	this->z = 0.0f;
+}
+
+//Operators:
+std::ostream& operator<<(std::ostream& stream, const Math::Vector3f& vect)
+{
+	return stream << "X: " << vect.x << " Y: " << vect.y << " Z: " << vect.z << std::endl;
 }

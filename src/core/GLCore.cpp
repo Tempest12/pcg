@@ -3,17 +3,21 @@
 #include <random>
 #include <vector>
 
+
 #include <math.h>
-#include <GL/glut.h>
 #include <stdlib.h>
 #include <time.h>
+#include <GL/glew.h>
+#include <GL/glut.h>
+
 
 #include "core/Camera.hpp"
 #include "core/GLCore.hpp"
-
 #include "math/Vector3f.hpp"
-
+#include "terrain/Generator.hpp"
+#include "terrain/Tile.hpp"
 #include "util/Config.hpp"
+#include "util/Log.hpp"
 
 //The namespace this code belongs to:
 using namespace Core;
@@ -28,31 +32,39 @@ static std::chrono::high_resolution_clock::time_point currentClock;
 
 static Camera camera;
 
-static int mouseX = 0;
-static int mouseY = 0;
-
 static int oldMouseX = 0;
 static int oldMouseY = 0;
 
-static bool leftClickDown = false;
-static bool cRandom = true;
+static Terrain::Tile* tile;
+static Terrain::Tile* OGTile;
 
-static Math::Vector3f angle;
+static char backwardKey;
+static char downKey;
+static char forwardKey;
+static char leftKey;
+static char rightKey;
+static char upKey;
 
-static std::vector<Math::Vector3f*> cPoints;
-static std::vector<Math::Vector3f*> cppPoints;
-
-static std::minstd_rand irand;
-static std::uniform_int_distribution<unsigned int> dist;
 
 void GLCore::init(int argc, char** argv)
 {	
 	Util::Config::init();
+	Util::Log::init(false, 0);
 
 	//Stuff Initialized for the update loop.
 	lastClock = std::chrono::high_resolution_clock::now();
 
-	camera = Camera(0.0f, 0.0f, 6.0f, 0.0f, 0.0f, -1.0f);
+	camera = Camera(0.0f, 0.0f, 6.0f);
+	camera.setSpeeds(Util::Config::convertSettingToFloat("camera", "walk_speed"),
+					 Util::Config::convertSettingToFloat("camera", "run_speed"),
+					 Util::Config::convertSettingToFloat("camera", "pan_speed"));
+
+	backwardKey = Util::Config::convertSettingToChar("controls", "backward");
+	downKey = Util::Config::convertSettingToChar("controls", "down");
+	forwardKey = Util::Config::convertSettingToChar("controls", "forward");
+	leftKey = Util::Config::convertSettingToChar("controls", "left");
+	rightKey = Util::Config::convertSettingToChar("controls", "right");
+	upKey = Util::Config::convertSettingToChar("controls", "up");
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -65,12 +77,15 @@ void GLCore::init(int argc, char** argv)
 	glutInitWindowPosition(Util::Config::convertSettingToInt("window", "init_x"), Util::Config::convertSettingToInt("window", "init_y"));
 
 	windowID = glutCreateWindow("Solar Shard");
+	glewInit();
+
 
 	//Register Window callback functions:
 	glutDisplayFunc(GLCore::runLoop);
 	glutKeyboardFunc(GLCore::keyboard);
-	//glutMouseFunc(GLCore::mouseClick);
-	//glutMotionFunc(GLCore::mouseMove);
+	glutMouseFunc(GLCore::mouseClick);
+	glutMotionFunc(GLCore::mouseActiveMotion);
+	glutPassiveMotionFunc(GLCore::mousePassiveMotion);
 	glutSpecialFunc(GLCore::functionKeys);
 
 	//Set variables:
@@ -88,56 +103,60 @@ void GLCore::init(int argc, char** argv)
 	glLoadIdentity();
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	angle = Math::Vector3f();
-	cPoints = std::vector<Math::Vector3f*>();
-	cppPoints = std::vector<Math::Vector3f*>();
+	Terrain::Generator* tileGen = new Terrain::Generator(25.0f);
+	tile = tileGen->newTile(0, -5, 0);
+	OGTile = tileGen->newTile(0, -5, 0);
+	
+	for(int count = 0; count < 5; count++)
+	{
+		tile->subDivide(0.0f);
+	}
 
-	srand(17);
-
-	irand.seed(37);
+	delete tileGen;
 }
 
 void GLCore::draw(void)
 {
-	Math::Vector3f* vector;
+	//Math::Vector3f* vector;
 
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	glLoadIdentity();
 
 	//Apply Camera Transformation
-	camera.ApplyTransformation();
+	camera.applyTransformation();
 
-	glRotatef(angle.x, 1.0f, 0.0f, 0.0f);
-	glRotatef(angle.y, 0.0f, 1.0f, 0.0f);
-
-
-	//C Points
 	glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
-	glBegin(GL_POINTS);
+	glBegin(GL_QUADS);
+	{
+		glVertex3f(0, -1, 0);
+		glVertex3f(5, -1, 0);
+		glVertex3f(5, -1, -5);
+		glVertex3f(0, -1, -5);
 
-		for(unsigned int index = 0; index < cPoints.size(); index++)
-		{
-			vector = cPoints.at(index);
-			glVertex3f(vector->x, vector->y, vector->z);
-		}
+		glVertex3f(5, -1, 0);
+		glVertex3f(10, -1, 0);
+		glVertex3f(10, -1, -5);
+		glVertex3f(5, -1, -5);
 
+		glVertex3f(0, -1, -5);
+		glVertex3f(5, -1, -5);
+		glVertex3f(5, -1, -10);
+		glVertex3f(0, -1, -10);
+
+		glVertex3f(5, -1, -5);
+		glVertex3f(10, -1, -5);
+		glVertex3f(10, -1, -10);
+		glVertex3f(5, -1, -10);
+	}
 	glEnd();
 
-	//C++ Points
-	glColor4f(0.0f, 0.0f, 1.0f, 1.0f);
-	glBegin(GL_POINTS);
+	if(tile != NULL && OGTile != NULL)
+	{
+		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+		tile->draw(false);
 
-		for(unsigned int index = 0; index < cppPoints.size(); index++)
-		{
-			vector = cppPoints.at(index);
-			glVertex3f(vector->x, vector->y, vector->z);
-		}
-
-	glEnd();
-
-
-	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-	glutWireCube(2.0f);
+		OGTile->draw(false);
+	}
 
 	glutSwapBuffers();
 }
@@ -149,115 +168,53 @@ void GLCore::functionKeys(int keyCode, int positionX, int positionY)
 
 void GLCore::keyboard(unsigned char keyCode, int positionX, int positionY)
 {
-	if(keyCode == ' ')
+	if(keyCode == backwardKey)
 	{
-		Math::Vector3f* newPoint;
-
-		if(cRandom == true)
-		{
-			newPoint = new Math::Vector3f((float)rand()/(float)RAND_MAX, (float)rand()/(float)RAND_MAX, (float)rand()/(float)RAND_MAX);
-
-			if(rand() % 2 == 1)
-			{
-				newPoint->x *= -1;
-			}
-			if(rand() % 2 == 1)
-			{
-				newPoint->y *= -1;
-			}
-			if(rand() % 2 == 1)
-			{
-				newPoint->z *= -1;
-			}
-
-			cPoints.push_back(new Math::Vector3f(newPoint));
-		}
-		else
-		{
-			//newPoint = new Math::Vector3f((float)irand()/(float)irand.max(), (float)irand()/(float)irand.max(), (float)irand()/(float)irand.max()); 
-			newPoint = new Math::Vector3f((float)dist(irand)/(float)dist.max(), (float)dist(irand)/(float)dist.max(), (float)dist(irand)/(float)dist.max());
-
-			if(rand() % 2 == 1)
-			{
-				newPoint->x *= -1;
-			}
-			if(rand() % 2 == 1)
-			{
-				newPoint->y *= -1;
-			}
-			if(rand() % 2 == 1)
-			{
-				newPoint->z *= -1;
-			}
-
-			cppPoints.push_back(new Math::Vector3f(newPoint));
-		}
+		camera.moveBackward(false);
 	}
-	else if(keyCode == 'c')
+	else if(keyCode == downKey)
 	{
-		Math::Vector3f* helper;
-
-		for(unsigned int index = 0; index < cPoints.size(); index++)
-		{
-			helper = cPoints[index];
-			delete helper;
-		}
-		for(unsigned int index = 0; index < cppPoints.size(); index++)
-		{
-			helper = cppPoints[index];
-			delete helper;
-		}
-
-		cPoints.clear();
-		cppPoints.clear();
+		camera.moveDown(false);
 	}
-	else if(keyCode == 'r')
+	else if(keyCode == forwardKey)
 	{
-		cRandom = !cRandom;
+		camera.moveForward(false);
 	}
-	else if(keyCode == 'a')
+	else if(keyCode == leftKey)
 	{
-		angle.x = 0;
-		angle.y = 0;
+		camera.moveLeft(false);
+	}
+	else if(keyCode == rightKey)
+	{
+		camera.moveRight(false);
+	}
+	else if(keyCode == upKey)
+	{
+		camera.moveUp(false);
 	}
 }
 
-/*void GLCore::mouseClick(int buttonCode, int buttonState, int positionX, int positionY)
+void GLCore::mouseClick(int buttonCode, int buttonState, int positionX, int positionY)
 {
-	if(buttonCode == GLUT_LEFT_BUTTON)
-	{
-		if(buttonState == GLUT_DOWN)
-		{
-			leftClickDown = true;
-
-			oldMouseX = positionX;
-			oldMouseY = positionY;
-		}
-		else
-		{
-			leftClickDown = false;
-		}
-	}
 }
 
-void GLCore::mouseMove(int positionX, int positionY)
+void GLCore::mouseActiveMotion(int positionX, int positionY)
 {
-	if(leftClickDown)
-	{
-		angle.x += 0.65f * (positionY - oldMouseY); 
-		angle.y += 0.65f * (positionX - oldMouseX);
-
-		angle.x = fmod(angle.x, 360.0f);
-		angle.y = fmod(angle.y, 360.0f);
-	}
-	else
-	{
-		return;
-	}
+	camera.panHorizontally(oldMouseX - positionX);
+	camera.panVertically(oldMouseY - positionY);
 
 	oldMouseX = positionX;
 	oldMouseY = positionY;
-}*/
+}
+
+void GLCore::mousePassiveMotion(int positionX, int positionY)
+{
+	/*camera.panHorizontally(oldMouseX - positionX);
+	camera.panVertically(oldMouseY - positionY);*/
+
+	oldMouseX = positionX;
+	oldMouseY = positionY;
+}
 
 void GLCore::runLoop(void)
 {
