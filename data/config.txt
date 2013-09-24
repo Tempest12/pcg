@@ -1,15 +1,19 @@
 section window
 {
-	width 500
-	height 500
+	width 900
+	height 900
 
 	init_x 350
 	init_y 350
 }
 
-section tileGeneration
+section generator
 {
-	random_bump 17.0f
+	random_bump 117.0f
+
+	h_value 1.365f
+
+	height_scale 20.0f
 
 	tile_size 25.0f
 }

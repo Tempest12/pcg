@@ -37,6 +37,7 @@ static int oldMouseY = 0;
 
 static Terrain::Tile* tile;
 static Terrain::Tile* OGTile;
+static Terrain::Tile* second;
 
 static char backwardKey;
 static char downKey;
@@ -103,22 +104,27 @@ void GLCore::init(int argc, char** argv)
 	glLoadIdentity();
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	Terrain::Generator* tileGen = new Terrain::Generator(25.0f);
-	tile = tileGen->newTile(0, -5, 0);
-	OGTile = tileGen->newTile(0, -5, 0);
-	
-	for(int count = 0; count < 5; count++)
-	{
-		tile->subDivide(0.0f);
-	}
 
+	Terrain::Tile::kValue = Util::Config::convertSettingToFloat("generator", "height_scale");
+	Terrain::Tile::hValue = Util::Config::convertSettingToFloat("generator", "h_value");
+	Terrain::Tile::randomBump = Util::Config::convertSettingToFloat("generator", "random_bump");
+
+
+	Terrain::Generator* tileGen = new Terrain::Generator(Util::Config::convertSettingToFloat("generator", "tile_size"));
+	tile = tileGen->newTile(0, 0, 0);
+	OGTile = tileGen->newTile(0, -5, 0);
+	second = tileGen->newTile(0, 1, 0);
+	
+	for(int index = 0; index < 7; index++)
+	{
+		tile->subDivide(0.0);
+		second->subDivide(0.0);
+	}
 	delete tileGen;
 }
 
 void GLCore::draw(void)
 {
-	//Math::Vector3f* vector;
-
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	glLoadIdentity();
 
@@ -126,7 +132,7 @@ void GLCore::draw(void)
 	camera.applyTransformation();
 
 	glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
-	glBegin(GL_QUADS);
+	/*glBegin(GL_QUADS);
 	{
 		glVertex3f(0, -1, 0);
 		glVertex3f(5, -1, 0);
@@ -148,13 +154,13 @@ void GLCore::draw(void)
 		glVertex3f(10, -1, -10);
 		glVertex3f(5, -1, -10);
 	}
-	glEnd();
+	glEnd();*/
 
 	if(tile != NULL && OGTile != NULL)
 	{
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 		tile->draw(false);
-
+		second->draw(false);
 		OGTile->draw(false);
 	}
 
