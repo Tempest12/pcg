@@ -81,7 +81,7 @@ void Camera::moveDown(bool running)
 	else
 	{
 		this->upVector.scale(this->walkSpeed);
-		this->position.subtract(&this->direction);
+		this->position.subtract(&this->upVector);
 		this->upVector.scale(1.0f / this->walkSpeed);
 	}
 }
@@ -151,7 +151,7 @@ void Camera::moveUp(bool running)
 	else
 	{
 		this->upVector.scale(this->walkSpeed);
-		this->position.add(&this->direction);
+		this->position.add(&this->upVector);
 		this->upVector.scale(1.0f / this->walkSpeed);
 	}
 }
@@ -160,6 +160,12 @@ void Camera::panHorizontally(float magnitude)
 {
 	this->horizontalAngle -= magnitude * this->panSpeed;
 	this->horizontalAngle = fmod(this->horizontalAngle, 360.0f);
+
+    if(fmod(this->horizontalAngle, 90.0f) == 0)
+    {
+    	this->horizontalAngle += 1.0f;
+    }
+
 	this->calculateDirection();
 }
 
@@ -167,6 +173,12 @@ void Camera::panVertically(float magnitude)
 {
 	this->verticalAngle -= magnitude * this->panSpeed;
 	this->verticalAngle = fmod(this->verticalAngle, 360.0f);
+
+	if(fmod(this->verticalAngle, 90.0f) == 0)
+	{
+		this->verticalAngle += 1.0f;
+	}
+
 	this->calculateDirection();
 }
 

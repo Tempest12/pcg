@@ -26,7 +26,7 @@ namespace Core
 		static void mousePassiveMotion(int positionX, int positionY);
 
 		static void runLoop(void);
-		static void uninit(void);
+		static void uninit(int returnCode);
 		static void update(float time);
 
 	protected:

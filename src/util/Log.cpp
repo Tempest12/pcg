@@ -96,10 +96,11 @@ void Log::writeMessage(const std::string& prefix, const std::string& message)
 {
 	currentTime = std::chrono::system_clock::now();
 	std::time_t time = std::chrono::system_clock::to_time_t(currentTime);
+	std::string timeString = std::string(std::ctime(&time));
 
 	if(file.is_open() && status)
 	{
-		file << std::string(std::ctime(&time)) << prefix << message << std::endl;
+		file << timeString.substr(0, timeString.length() - 1) << " " << prefix << message << std::endl;
 		status = file.good();
 	}
 }

@@ -21,20 +21,24 @@ namespace Terrain
 		unsigned int* bufferIDs;
 			// 0 -> Vertex Buffer
 			// 1 -> Index Buffer
+			// 2 -> Normal Buffer
 
 		//Subdividing Data
 		int     round;
 
 		float** points;
-		float   pointsCount;
+		unsigned int pointsCount;
+        unsigned int indexCount;
+        unsigned int vertexCount;  
 		
 	protected:
 	private:
 
+		bool hasBuffers;
+
 		//Generation Data:
 		std::minstd_rand randomNum;
 		std::normal_distribution<float> distribution;
-
 
 	//Methods:
 	public:
@@ -43,19 +47,18 @@ namespace Terrain
 		~Tile();
 
 		void draw(bool wired);
+		void prepareDraw(void);
 		void subDivide(float range);
 
 	protected:
 	private:
 		float** buildArray(int count);
 		void deleteArray(void);
+		void deleteBuffers(void);
 
-		void prepareDraw(void);
-		
-		int numberOfPoints();
-
-		unsigned int vertexIndex(int row, int col, int dimension);
-		unsigned int vertexIndex(int row, int col);
+		unsigned int indexBufferIndex(unsigned int row, unsigned int col);
+		unsigned int numberOfPoints(int level);
+		unsigned int vertexBufferIndex(unsigned int row, unsigned int col, unsigned int coordinate);
 		
 	//Static 
 	//Variables
@@ -68,7 +71,7 @@ namespace Terrain
 		static float primeOne;
 		static float primeTwo;
 
-
+		static int bufferCount;
 	//Methods:
 	public:
 

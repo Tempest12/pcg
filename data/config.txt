@@ -3,8 +3,8 @@ section window
 	width 900
 	height 900
 
-	init_x 350
-	init_y 350
+	init_x 50
+	init_y 50
 }
 
 section generator
@@ -13,9 +13,19 @@ section generator
 
 	h_value 1.365f
 
-	height_scale 20.0f
+	height_scale 35.0f
+	tile_size 30.0f
 
-	tile_size 25.0f
+	subdivisions 4
+
+	random_subdivide yes 
+}
+
+section render
+{
+	smooth_shading yes
+
+	use_buffers yes
 }
 
 section camera
@@ -32,6 +42,8 @@ section controls
 	right d
 	backward s 
 	left a 
-	up q 
-	down e
+	up e
+	down q
+
+	wired t
 }

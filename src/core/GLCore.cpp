@@ -35,9 +35,9 @@ static Camera camera;
 static int oldMouseX = 0;
 static int oldMouseY = 0;
 
-static Terrain::Tile* tile;
-static Terrain::Tile* OGTile;
-static Terrain::Tile* second;
+static Terrain::Tile** tiles;
+
+static bool wired;
 
 static char backwardKey;
 static char downKey;
@@ -45,6 +45,9 @@ static char forwardKey;
 static char leftKey;
 static char rightKey;
 static char upKey;
+static char wiredKey;
+
+
 
 
 void GLCore::init(int argc, char** argv)
@@ -66,6 +69,7 @@ void GLCore::init(int argc, char** argv)
 	leftKey = Util::Config::convertSettingToChar("controls", "left");
 	rightKey = Util::Config::convertSettingToChar("controls", "right");
 	upKey = Util::Config::convertSettingToChar("controls", "up");
+	wiredKey = Util::Config::convertSettingToChar("controls", "wired");
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -74,12 +78,15 @@ void GLCore::init(int argc, char** argv)
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH);
 
 	//Set the window size and position:
-	glutInitWindowSize(Util::Config::convertSettingToInt("window", "width"), Util::Config::convertSettingToInt("window", "height"));
+	width = Util::Config::convertSettingToInt("window", "width");
+    height = Util::Config::convertSettingToInt("window", "height");
+    glutInitWindowSize(width, height);
 	glutInitWindowPosition(Util::Config::convertSettingToInt("window", "init_x"), Util::Config::convertSettingToInt("window", "init_y"));
 
 	windowID = glutCreateWindow("Solar Shard");
 	glewInit();
 
+	//std::cout << GLEW_OK << " and " << error << std::endl;
 
 	//Register Window callback functions:
 	glutDisplayFunc(GLCore::runLoop);
@@ -102,8 +109,15 @@ void GLCore::init(int argc, char** argv)
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+
+	glEnable(GL_LIGHTING);
+	glShadeModel(GL_SMOOTH);
+	glEnable(GL_COLOR_MATERIAL);
+
+	glEnable(GL_LIGHT0);
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+	wired = false;
 
 	Terrain::Tile::kValue = Util::Config::convertSettingToFloat("generator", "height_scale");
 	Terrain::Tile::hValue = Util::Config::convertSettingToFloat("generator", "h_value");
@@ -111,15 +125,20 @@ void GLCore::init(int argc, char** argv)
 
 
 	Terrain::Generator* tileGen = new Terrain::Generator(Util::Config::convertSettingToFloat("generator", "tile_size"));
-	tile = tileGen->newTile(0, 0, 0);
-	OGTile = tileGen->newTile(0, -5, 0);
-	second = tileGen->newTile(0, 1, 0);
 	
-	for(int index = 0; index < 7; index++)
+	tiles = new Terrain::Tile*[9];
+
+	int index = 0;
+	for(int row = -1; row < 2; row++)
 	{
-		tile->subDivide(0.0);
-		second->subDivide(0.0);
+		for(int col = -1; col < 2; col++)
+		{
+			tiles[index] = tileGen->newTile(col, row, Util::Config::convertSettingToInt("generator", "subdivisions"));
+			tiles[index][0].prepareDraw();
+			index++;
+		}
 	}
+	
 	delete tileGen;
 }
 
@@ -128,41 +147,31 @@ void GLCore::draw(void)
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	glLoadIdentity();
 
+	float lightPosition[] = {0.0f, 10.0f, 0.0f, 0.0f};
+	float specularColour[] = {0.2f, 0.2f, 0.2f, 1.0f};
+	float shininess = 5.0f;
+
 	//Apply Camera Transformation
 	camera.applyTransformation();
 
-	glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
-	/*glBegin(GL_QUADS);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, specularColour);
+	glMaterialfv(GL_FRONT, GL_SHININESS, &shininess);
+	glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+
+	for(int index = 0; index < 9; index++)
 	{
-		glVertex3f(0, -1, 0);
-		glVertex3f(5, -1, 0);
-		glVertex3f(5, -1, -5);
-		glVertex3f(0, -1, -5);
-
-		glVertex3f(5, -1, 0);
-		glVertex3f(10, -1, 0);
-		glVertex3f(10, -1, -5);
-		glVertex3f(5, -1, -5);
-
-		glVertex3f(0, -1, -5);
-		glVertex3f(5, -1, -5);
-		glVertex3f(5, -1, -10);
-		glVertex3f(0, -1, -10);
-
-		glVertex3f(5, -1, -5);
-		glVertex3f(10, -1, -5);
-		glVertex3f(10, -1, -10);
-		glVertex3f(5, -1, -10);
+		tiles[index][0].draw(wired);
 	}
+
+	/*glColor4f(0.0f, 1.0f, 1.0f, 1.0f);
+	glBegin(GL_QUADS);
+		glNormal3f(0.0f, 1.0f, 0.0f);
+		glVertex3f(-10.0f, 0.0f, -10.0f);
+		glVertex3f(-10.0f, 0.0f, 30.0f);
+		glVertex3f(10.0f, 0.0f, 30.0f);
+		glVertex3f(10.0f, 0.0f, -10.0f);
 	glEnd();*/
 
-	if(tile != NULL && OGTile != NULL)
-	{
-		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-		tile->draw(false);
-		second->draw(false);
-		OGTile->draw(false);
-	}
 
 	glutSwapBuffers();
 }
@@ -174,7 +183,11 @@ void GLCore::functionKeys(int keyCode, int positionX, int positionY)
 
 void GLCore::keyboard(unsigned char keyCode, int positionX, int positionY)
 {
-	if(keyCode == backwardKey)
+	if(keyCode == 27)//KeyCode for escape.
+	{
+		uninit(0);
+	}
+	else if(keyCode == backwardKey)
 	{
 		camera.moveBackward(false);
 	}
@@ -198,6 +211,10 @@ void GLCore::keyboard(unsigned char keyCode, int positionX, int positionY)
 	{
 		camera.moveUp(false);
 	}
+	else if(keyCode == wiredKey)
+	{
+		wired = !wired;
+	}
 }
 
 void GLCore::mouseClick(int buttonCode, int buttonState, int positionX, int positionY)
@@ -215,9 +232,6 @@ void GLCore::mouseActiveMotion(int positionX, int positionY)
 
 void GLCore::mousePassiveMotion(int positionX, int positionY)
 {
-	/*camera.panHorizontally(oldMouseX - positionX);
-	camera.panVertically(oldMouseY - positionY);*/
-
 	oldMouseX = positionX;
 	oldMouseY = positionY;
 }
@@ -233,9 +247,12 @@ void GLCore::runLoop(void)
 	glutPostRedisplay();
 }
 
-void GLCore::uninit(void)
+void GLCore::uninit(int returnCode)
 {
+	Util::Log::uninit();
+	Util::Config::uninit();
 
+	exit(returnCode);
 }
 
 void GLCore::update(float deltaTime)
