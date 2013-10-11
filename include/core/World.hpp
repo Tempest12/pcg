@@ -3,7 +3,9 @@
 
 #include <vector>
 
+#include "math/Vector3f.hpp"
 #include "terrain/Generator.hpp"
+#include "util/HashTypes.hpp"
 
 namespace Core
 {
@@ -12,7 +14,11 @@ namespace Core
 	//Variable:
 	public:
 
-		Terrain::Generator* generator;
+		int boundarySize;
+
+		Terrain::Generator generator;
+
+		Util::CoordsToTileHash tiles;
 
 	protected:
 	private:		
@@ -23,7 +29,7 @@ namespace Core
 		World(void);
 		~World(void);
 
-		void draw(void);
+		void draw(Math::Vector3f* cameraPosition);
 
 	protected:
 	private:

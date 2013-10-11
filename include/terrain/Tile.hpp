@@ -14,8 +14,8 @@ namespace Terrain
 
 		//Location Data
 		float   size;                                                                                                                                                                                                                                                                                                                                                                                                            
-		float   xCoord;
-		float   zCoord;
+		int   xCoord;
+		int   zCoord;
 
 		//Rendering Data
 		unsigned int* bufferIDs;
@@ -24,7 +24,7 @@ namespace Terrain
 			// 2 -> Normal Buffer
 
 		//Subdividing Data
-		int     round;
+		int round;
 
 		float** points;
 		unsigned int pointsCount;
@@ -36,19 +36,15 @@ namespace Terrain
 
 		bool hasBuffers;
 
-		//Generation Data:
-		std::minstd_rand randomNum;
-		std::normal_distribution<float> distribution;
-
 	//Methods:
 	public:
 
-		Tile(float xCoord, float zCoord, float size);
+		Tile(int xCoord, int zCoord, float size);
 		~Tile();
 
 		void draw(bool wired);
 		void prepareDraw(void);
-		void subDivide(float range);
+		void subDivide(void);
 
 	protected:
 	private:
@@ -68,16 +64,55 @@ namespace Terrain
 		static float randomBump;
 
 	private:
+		static int bufferCount;
+
 		static float primeOne;
 		static float primeTwo;
 
-		static int bufferCount;
+
 	//Methods:
 	public:
 
-		static float spawnMiddle(float xCoord, float zCoord);
+		static int getSeed(float xCoord, float zCoord, float seedMax);
+		static void init(void);
+		static float middleHeight(float xCoord, float zCoord);
+
 
 	private:
+	};
+
+	//Used strictly to allow hashing of a tile object:
+	class TileHasher
+	{
+	public:
+		size_t operator()(const float* key)
+		{
+			if(key != NULL)
+			{
+				return (48859 * key[0]) + (80309 * key[1]);
+			}
+			else
+			{
+				return 0;
+			}
+		}
+	};
+
+	//Used to determine if two keys are the same:
+	class TileKeyEquals
+	{
+	public:
+		bool operator()(const float* left, const float* right)
+		{
+			if(left != NULL && right != NULL)
+			{
+				return (left[0] == right[0]) && (left[1] == right[1]);
+			}
+			else
+			{
+				return false;
+			}
+		}
 	};
 }
 

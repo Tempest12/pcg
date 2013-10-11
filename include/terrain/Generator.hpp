@@ -18,7 +18,7 @@ namespace Terrain
 	//Functions:
 	public:
 
-		Generator(float tileSize);
+		Generator(void);
 
 		Tile* newTile(float x, float z, int steps);
 

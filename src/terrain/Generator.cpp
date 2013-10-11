@@ -1,11 +1,12 @@
-#include <terrain/Generator.hpp>
-#include <terrain/Tile.hpp>
+#include "terrain/Generator.hpp"
+#include "terrain/Tile.hpp"
+#include "util/Config.hpp"
 
 using namespace Terrain;
 
-Generator::Generator(float tileSize)
+Generator::Generator(void)
 {
-	this->tileSize = tileSize;
+	this->tileSize = Util::Config::convertSettingToFloat("generator", "tile_size");
 }
 
 Tile* Generator::newTile(float x, float z, int steps)
@@ -14,8 +15,10 @@ Tile* Generator::newTile(float x, float z, int steps)
 
 	for(int count = 0; count < steps; count++)
 	{
-		tile->subDivide(0.0f);
+		tile->subDivide();
 	}
+
+	tile->prepareDraw();
 
 	return tile;
 }

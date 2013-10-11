@@ -14,7 +14,7 @@ using namespace Terrain;
 //Defines:
 #define BUFFERCOUNT 3
 
-Tile::Tile(float xCoord, float zCoord, float size)
+Tile::Tile(int xCoord, int zCoord, float size)
 {
 	//Location Data:
 	this->xCoord = xCoord;
@@ -31,25 +31,18 @@ Tile::Tile(float xCoord, float zCoord, float size)
 	this->indexCount  = 6;
 	this->vertexCount = 4;
 
-	//Setup the random generator
-	this->randomNum = std::minstd_rand();
-	float seed = (primeOne * this->xCoord) + (primeTwo * this->zCoord) + randomBump;
-	seed = fmod(seed, this->randomNum.max());
-	this->randomNum.seed(seed);
-	this->distribution = std::normal_distribution<float>(0, kValue);
-
 	//Setup initl		
-	this->points[0][0] = spawnMiddle(this->xCoord - 1, this->zCoord - 1);
-	this->points[0][1] = spawnMiddle(this->xCoord + 0, this->zCoord - 1);
-	this->points[0][2] = spawnMiddle(this->xCoord + 1, this->zCoord - 1);
+	this->points[0][0] = middleHeight(this->xCoord - 1, this->zCoord - 1);
+	this->points[0][1] = middleHeight(this->xCoord + 0, this->zCoord - 1);
+	this->points[0][2] = middleHeight(this->xCoord + 1, this->zCoord - 1);
 
-	this->points[1][0] = spawnMiddle(this->xCoord - 1, this->zCoord + 0);
-	this->points[1][1] = this->distribution(this->randomNum);
-	this->points[1][2] = spawnMiddle(this->xCoord + 1, this->zCoord + 0);
+	this->points[1][0] = middleHeight(this->xCoord - 1, this->zCoord + 0);
+	this->points[1][1] = middleHeight(this->xCoord + 0, this->zCoord + 0);
+	this->points[1][2] = middleHeight(this->xCoord + 1, this->zCoord + 0);
 
-	this->points[2][0] = spawnMiddle(this->xCoord - 1, this->zCoord + 1);
-	this->points[2][1] = spawnMiddle(this->xCoord + 0, this->zCoord + 1);
-	this->points[2][2] = spawnMiddle(this->xCoord + 1, this->zCoord + 1);
+	this->points[2][0] = middleHeight(this->xCoord - 1, this->zCoord + 1);
+	this->points[2][1] = middleHeight(this->xCoord + 0, this->zCoord + 1);
+	this->points[2][2] = middleHeight(this->xCoord + 1, this->zCoord + 1);
 
 	this->hasBuffers = false;
 }
@@ -365,13 +358,11 @@ void Tile::prepareDraw(void)
 	//std::cout << "Index Count: " << this->indexCount << std::endl;
 }
 
-void Tile::subDivide(float range)
+void Tile::subDivide(void)
 {
 	this->round++;
 	int newCount = this->numberOfPoints(this->round);
 	float** newPoints = buildArray(newCount);
-
-	this->distribution = std::normal_distribution<float>(0, kValue * pow(2, -round * hValue));
 
 	for(unsigned int row = 0; row < this->pointsCount - 1; row++)
 	{
@@ -381,13 +372,26 @@ void Tile::subDivide(float range)
 			newPoints[row * 2 + 1][col * 2 + 0] = (9.0f * this->points[row + 1][col + 0] / 16.0f) + (3.0f * this->points[row + 0][col + 0] / 16.0f) + (3.0f * this->points[row + 1][col + 1] / 16.0f) + (1.0f * this->points[row + 0][col + 1] / 16.0f);
 			newPoints[row * 2 + 1][col * 2 + 1] = (9.0f * this->points[row + 1][col + 1] / 16.0f) + (3.0f * this->points[row + 1][col + 0] / 16.0f) + (3.0f * this->points[row + 0][col + 1] / 16.0f) + (1.0f * this->points[row + 0][col + 0] / 16.0f); 
 			newPoints[row * 2 + 0][col * 2 + 1] = (9.0f * this->points[row + 0][col + 1] / 16.0f) + (3.0f * this->points[row + 0][col + 0] / 16.0f) + (3.0f * this->points[row + 1][col + 1] / 16.0f) + (1.0f * this->points[row + 1][col + 0] / 16.0f);
+		}
+	}
 
-			if(Util::Config::convertSettingToBool("generator", "random_subdivide"))
+	if(Util::Config::convertSettingToBool("generator", "random_subdivide"))
+	{
+		float stdDev = kValue * pow(2, -round * hValue);
+
+		float delta = this->size / (newCount - 2);
+		float startX = (this->size * this->xCoord) - (this->size / 2.0f);
+		float startZ = (this->size * this->zCoord) - (this->size / 2.0f);
+
+		for(int row = 0; row < newCount; row++)
+		{
+			for(int col = 0; col < newCount; col++)
 			{
-				newPoints[row * 2 + 0][col * 2 + 0] += this->distribution(this->randomNum);
-				newPoints[row * 2 + 1][col * 2 + 0] += this->distribution(this->randomNum);
-				newPoints[row * 2 + 1][col * 2 + 1] += this->distribution(this->randomNum);
-				newPoints[row * 2 + 0][col * 2 + 1] += this->distribution(this->randomNum);
+				std::minstd_rand random = std::minstd_rand();
+				std::normal_distribution<float> distribution = std::normal_distribution<float>(0.0, stdDev);
+				random.seed(getSeed(startX + col * delta, startZ + row * delta, random.max()));
+
+				newPoints[row][col] += distribution(random);
 			}
 		}
 	}
@@ -460,14 +464,25 @@ float Tile::primeOne = 48859.0f;
 float Tile::primeTwo = 80309.0f;
 
 //Functions:
-float Tile::spawnMiddle(float xCoord, float zCoord)
+int Tile::getSeed(float xCoord, float zCoord, float maxSeed)
 {
-	std::minstd_rand random = std::minstd_rand();
-	std::normal_distribution<float> dist = std::normal_distribution<float>(0.0f, kValue);
-
 	float seed = (primeOne * xCoord) + (primeTwo * zCoord) + randomBump;
-	seed = fmod(seed, random.max());
-	random.seed(seed);
+	seed = fmod(seed, maxSeed);
+	return (int)seed;
+}
 
-	return dist(random);
+void Tile::init(void)
+{
+	kValue = Util::Config::convertSettingToFloat("generator", "height_scale");
+	hValue = Util::Config::convertSettingToFloat("generator", "h_value");
+	randomBump = Util::Config::convertSettingToFloat("generator", "random_bump");
+}
+
+float Tile::middleHeight(float xCoord, float zCoord)
+{ 
+	std::minstd_rand random = std::minstd_rand();
+	std::normal_distribution<float> distribution = std::normal_distribution<float>(0.0f, kValue);
+	random.seed(getSeed(xCoord, zCoord, random.max()));
+
+	return distribution(random);
 }

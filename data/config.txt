@@ -18,12 +18,14 @@ section generator
 
 	subdivisions 4
 
-	random_subdivide yes 
+	random_subdivide yes
 }
 
 section render
 {
 	smooth_shading yes
+
+	boundary_size 1
 
 	use_buffers yes
 }

@@ -119,12 +119,8 @@ void GLCore::init(int argc, char** argv)
 
 	wired = false;
 
-	Terrain::Tile::kValue = Util::Config::convertSettingToFloat("generator", "height_scale");
-	Terrain::Tile::hValue = Util::Config::convertSettingToFloat("generator", "h_value");
-	Terrain::Tile::randomBump = Util::Config::convertSettingToFloat("generator", "random_bump");
-
-
-	Terrain::Generator* tileGen = new Terrain::Generator(Util::Config::convertSettingToFloat("generator", "tile_size"));
+	Terrain::Tile::init();
+	Terrain::Generator* tileGen = new Terrain::Generator();
 	
 	tiles = new Terrain::Tile*[9];
 
@@ -134,7 +130,6 @@ void GLCore::init(int argc, char** argv)
 		for(int col = -1; col < 2; col++)
 		{
 			tiles[index] = tileGen->newTile(col, row, Util::Config::convertSettingToInt("generator", "subdivisions"));
-			tiles[index][0].prepareDraw();
 			index++;
 		}
 	}
