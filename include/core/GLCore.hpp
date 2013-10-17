@@ -1,5 +1,5 @@
-#ifndef _CORE_HPP
-#define _CORE_HPP
+#ifndef _CORE_GLCORE_HPP
+#define _CORE_GLCORE_HPP
 
 #include <chrono>
 

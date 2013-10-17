@@ -1,5 +1,5 @@
-#ifndef _VECTOR3F_HPP
-#define _VECTOR3F_HPP
+#ifndef _MATH_VECTOR3F_HPP
+#define _MATH_VECTOR3F_HPP
 
 #include <iostream>
 

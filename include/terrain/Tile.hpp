@@ -1,5 +1,5 @@
-#ifndef _TILE_HPP
-#define _TILE_HPP
+#ifndef _TERRAIN_TILE_HPP
+#define _TERRAIN_TILE_HPP
 
 #include <random>
 
@@ -61,21 +61,21 @@ namespace Terrain
 	public:
 		static float kValue;
 		static float hValue;
-		static float randomBump;
+		static int randomBump;
 
 	private:
 		static int bufferCount;
 
-		static float primeOne;
-		static float primeTwo;
+		static int primeOne;
+		static int primeTwo;
 
 
 	//Methods:
 	public:
 
-		static int getSeed(float xCoord, float zCoord, float seedMax);
+		static int getSeed(int xCoord, int zCoord, float seedMax);
 		static void init(void);
-		static float middleHeight(float xCoord, float zCoord);
+		static float middleHeight(int xCoord, int zCoord);
 
 
 	private:
@@ -85,16 +85,9 @@ namespace Terrain
 	class TileHasher
 	{
 	public:
-		size_t operator()(const float* key)
+		size_t operator()(const int* key) const
 		{
-			if(key != NULL)
-			{
-				return (48859 * key[0]) + (80309 * key[1]);
-			}
-			else
-			{
-				return 0;
-			}
+			return (48859 * key[0]) + (80309 * key[1]);
 		}
 	};
 
@@ -102,16 +95,9 @@ namespace Terrain
 	class TileKeyEquals
 	{
 	public:
-		bool operator()(const float* left, const float* right)
+		bool operator()(const int* left, const int* right) const
 		{
-			if(left != NULL && right != NULL)
-			{
-				return (left[0] == right[0]) && (left[1] == right[1]);
-			}
-			else
-			{
-				return false;
-			}
+			return (left[0] == right[0]) && (left[1] == right[1]);
 		}
 	};
 }

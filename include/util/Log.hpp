@@ -1,5 +1,5 @@
-#ifndef _LOG_H
-#define _LOG_H
+#ifndef _UTIL_LOG_H
+#define _UTIL_LOG_H
 
 #include <string>
 

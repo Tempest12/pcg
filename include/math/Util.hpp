@@ -1,5 +1,5 @@
-#ifndef _UTIL_HPP
-#define _UTIL_HPP
+#ifndef _MATH_UTIL_HPP
+#define _MATH_UTIL_HPP
 
 #define _USE_MATH_DEFINES
 #include <math.h>

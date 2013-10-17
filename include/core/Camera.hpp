@@ -1,5 +1,5 @@
-#ifndef _CAMERA_HPP
-#define _CAMERA_HPP
+#ifndef _CORE_CAMERA_HPP
+#define _CORE_CAMERA_HPP
 
 #include "math/Vector3f.hpp"
 
@@ -44,9 +44,6 @@ namespace Core
 
 		void panHorizontally(float magnitude);
 		void panVertically(float magnitude);
-
-		void setSpeeds(float walking, float running, float panSpeed);
-
 
 	protected:
 	private:

@@ -1,5 +1,5 @@
-#ifndef _JSONOBJECT_HPP
-#define _JSONOBJECT_HPP
+#ifndef _RESOURCE_JSONOBJECT_HPP
+#define _RESOURCE_JSONOBJECT_HPP
 
 #include <string>
 #include <unordered_map>
@@ -7,7 +7,7 @@
 #include "JSONArray.hpp"
 #include "HashTypes.hpp"
 
-namespace Data
+namespace Resource
 {
 	class JSONObject
 	{

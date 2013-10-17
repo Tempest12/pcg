@@ -1,15 +1,22 @@
+#include <iostream>
+
 #include <math.h>
 #include <GL/glut.h>
 
 #include "core/Camera.hpp"
 #include "math/Vector3f.hpp"
 #include "math/Util.hpp"
+#include "util/Config.hpp"
 
 //This namespace this codes belongs to:
 using namespace Core;
 
 Camera::Camera(void)
 {
+	this->panSpeed  = Util::Config::convertSettingToFloat("camera", "pan_speed");
+	this->runSpeed  = Util::Config::convertSettingToFloat("camera", "run_speed");
+	this->walkSpeed = Util::Config::convertSettingToFloat("camera", "walk_speed");
+
 	this->horizontalAngle = 270.0f;
 	this->verticalAngle = 90.0f;
 
@@ -23,6 +30,10 @@ Camera::Camera(void)
 
 Camera::Camera(float x, float y, float z)
 {
+	this->panSpeed  = Util::Config::convertSettingToFloat("camera", "pan_speed");
+	this->runSpeed  = Util::Config::convertSettingToFloat("camera", "run_speed");
+	this->walkSpeed = Util::Config::convertSettingToFloat("camera", "walk_speed");
+
 	this->horizontalAngle = 270.0f;
 	this->verticalAngle = 90.0f;
 
@@ -166,6 +177,15 @@ void Camera::panHorizontally(float magnitude)
     	this->horizontalAngle += 1.0f;
     }
 
+    if(this->horizontalAngle < 0)
+    {
+    	this->upVector.y = -1.0f;
+    }
+    else
+    {
+    	this->upVector.y = 1.0f;
+    }
+
 	this->calculateDirection();
 }
 
@@ -180,11 +200,4 @@ void Camera::panVertically(float magnitude)
 	}
 
 	this->calculateDirection();
-}
-
-void Camera::setSpeeds(float walkSpeed, float runSpeed, float panSpeed)
-{
-	this->walkSpeed = walkSpeed;
-	this->runSpeed = runSpeed;
-	this->panSpeed = panSpeed;
 }

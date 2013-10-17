@@ -1,5 +1,5 @@
-#ifndef _STRINGLIB_H
-#define _STRINGLIB_H
+#ifndef _UTIL_STRINGLIB_H
+#define _UTIL_STRINGLIB_H
 
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #include <string>

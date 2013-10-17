@@ -1,5 +1,5 @@
-#ifndef _TRIKEY_HPP
-#define _TRIKEY_HPP
+#ifndef _UTIL_TRIKEY_HPP
+#define _UTIL_TRIKEY_HPP
 
 #include <string>
 #include <unordered_map>

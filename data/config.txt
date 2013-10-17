@@ -13,19 +13,19 @@ section generator
 
 	h_value 1.365f
 
-	height_scale 35.0f
+	height_scale 15.0f
 	tile_size 30.0f
 
 	subdivisions 4
 
-	random_subdivide yes
+	random_subdivide no
 }
 
 section render
 {
-	smooth_shading yes
+	smooth_shading no
 
-	boundary_size 1
+	boundary_size 2
 
 	use_buffers yes
 }

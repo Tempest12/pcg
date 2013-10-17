@@ -458,13 +458,13 @@ unsigned int Tile::vertexBufferIndex(unsigned int row, unsigned int col, unsigne
 //Variables:
 float Tile::kValue;
 float Tile::hValue;
-float Tile::randomBump;
+int Tile::randomBump;
 
-float Tile::primeOne = 48859.0f;
-float Tile::primeTwo = 80309.0f;
+int Tile::primeOne = 48859;
+int Tile::primeTwo = 80309;
 
 //Functions:
-int Tile::getSeed(float xCoord, float zCoord, float maxSeed)
+int Tile::getSeed(int xCoord, int zCoord, float maxSeed)
 {
 	float seed = (primeOne * xCoord) + (primeTwo * zCoord) + randomBump;
 	seed = fmod(seed, maxSeed);
@@ -473,12 +473,12 @@ int Tile::getSeed(float xCoord, float zCoord, float maxSeed)
 
 void Tile::init(void)
 {
-	kValue = Util::Config::convertSettingToFloat("generator", "height_scale");
+	kValue = Util::Config::convertSettingToInt("generator", "height_scale");
 	hValue = Util::Config::convertSettingToFloat("generator", "h_value");
-	randomBump = Util::Config::convertSettingToFloat("generator", "random_bump");
+	randomBump = Util::Config::convertSettingToInt("generator", "random_bump");
 }
 
-float Tile::middleHeight(float xCoord, float zCoord)
+float Tile::middleHeight(int xCoord, int zCoord)
 { 
 	std::minstd_rand random = std::minstd_rand();
 	std::normal_distribution<float> distribution = std::normal_distribution<float>(0.0f, kValue);

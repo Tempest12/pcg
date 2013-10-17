@@ -1,5 +1,5 @@
-#ifndef _JSONARRAY_HPP
-#define _JSONARRAY_HPP
+#ifndef _RESOURCE_JSONARRAY_HPP
+#define _RESOURCE_JSONARRAY_HPP
 
 namespace Data
 {

@@ -1,5 +1,5 @@
-#ifndef _SHADER_PROGRAM_HPP
-#define _SHADER_PROGRAM_HPP
+#ifndef _SHADER_SHADER_PROGRAM_HPP
+#define _SHADER_SHADER_PROGRAM_HPP
 
 namespace Shader
 {

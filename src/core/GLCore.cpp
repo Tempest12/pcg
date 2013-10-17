@@ -4,6 +4,7 @@
 #include <vector>
 
 
+#include <ctype.h>
 #include <math.h>
 #include <stdlib.h>
 #include <time.h>
@@ -13,6 +14,7 @@
 
 #include "core/Camera.hpp"
 #include "core/GLCore.hpp"
+#include "core/World.hpp"
 #include "math/Vector3f.hpp"
 #include "terrain/Generator.hpp"
 #include "terrain/Tile.hpp"
@@ -30,12 +32,12 @@ static int windowID;
 static std::chrono::high_resolution_clock::time_point lastClock;
 static std::chrono::high_resolution_clock::time_point currentClock;
 
-static Camera camera;
+static Camera* camera;
 
 static int oldMouseX = 0;
 static int oldMouseY = 0;
 
-static Terrain::Tile** tiles;
+static World* world;
 
 static bool wired;
 
@@ -53,15 +55,13 @@ static char wiredKey;
 void GLCore::init(int argc, char** argv)
 {	
 	Util::Config::init();
+	//Util::Config::printSections();
 	Util::Log::init(false, 0);
 
 	//Stuff Initialized for the update loop.
 	lastClock = std::chrono::high_resolution_clock::now();
 
-	camera = Camera(0.0f, 0.0f, 6.0f);
-	camera.setSpeeds(Util::Config::convertSettingToFloat("camera", "walk_speed"),
-					 Util::Config::convertSettingToFloat("camera", "run_speed"),
-					 Util::Config::convertSettingToFloat("camera", "pan_speed"));
+	camera = new Camera(0.0f, 0.0f, 6.0f);
 
 	backwardKey = Util::Config::convertSettingToChar("controls", "backward");
 	downKey = Util::Config::convertSettingToChar("controls", "down");
@@ -119,22 +119,7 @@ void GLCore::init(int argc, char** argv)
 
 	wired = false;
 
-	Terrain::Tile::init();
-	Terrain::Generator* tileGen = new Terrain::Generator();
-	
-	tiles = new Terrain::Tile*[9];
-
-	int index = 0;
-	for(int row = -1; row < 2; row++)
-	{
-		for(int col = -1; col < 2; col++)
-		{
-			tiles[index] = tileGen->newTile(col, row, Util::Config::convertSettingToInt("generator", "subdivisions"));
-			index++;
-		}
-	}
-	
-	delete tileGen;
+	world = new World();
 }
 
 void GLCore::draw(void)
@@ -142,31 +127,26 @@ void GLCore::draw(void)
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	glLoadIdentity();
 
-	float lightPosition[] = {0.0f, 10.0f, 0.0f, 0.0f};
+	float ambientColour[] = {0.21f, 0.21f, 0.21f, 1.0f};
+	float lightPosition[] = {0.0f, 100.0f, 0.0f, 0.0f};
 	float specularColour[] = {0.2f, 0.2f, 0.2f, 1.0f};
-	float shininess = 5.0f;
+	float diffuse[] = {0.33f, 0.33f, 0.33f, 1.0f};
+	float shininess = 0.5f;
+
+	float whiteLight[] = {0.5f, 0.5f, 0.5f, 1.0f};
 
 	//Apply Camera Transformation
-	camera.applyTransformation();
+	camera->applyTransformation();
 
 	glMaterialfv(GL_FRONT, GL_SPECULAR, specularColour);
 	glMaterialfv(GL_FRONT, GL_SHININESS, &shininess);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
 	glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, whiteLight);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, whiteLight);
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientColour);
 
-	for(int index = 0; index < 9; index++)
-	{
-		tiles[index][0].draw(wired);
-	}
-
-	/*glColor4f(0.0f, 1.0f, 1.0f, 1.0f);
-	glBegin(GL_QUADS);
-		glNormal3f(0.0f, 1.0f, 0.0f);
-		glVertex3f(-10.0f, 0.0f, -10.0f);
-		glVertex3f(-10.0f, 0.0f, 30.0f);
-		glVertex3f(10.0f, 0.0f, 30.0f);
-		glVertex3f(10.0f, 0.0f, -10.0f);
-	glEnd();*/
-
+	world->draw(&camera->position, wired);
 
 	glutSwapBuffers();
 }
@@ -178,33 +158,78 @@ void GLCore::functionKeys(int keyCode, int positionX, int positionY)
 
 void GLCore::keyboard(unsigned char keyCode, int positionX, int positionY)
 {
+	keyCode = tolower(keyCode);
+	int modifierKeys = glutGetModifiers();
+
 	if(keyCode == 27)//KeyCode for escape.
 	{
 		uninit(0);
 	}
 	else if(keyCode == backwardKey)
 	{
-		camera.moveBackward(false);
+		if(modifierKeys == GLUT_ACTIVE_SHIFT)
+		{
+			camera->moveBackward(true);
+		}
+		else
+		{
+			camera->moveBackward(false);
+		}
 	}
 	else if(keyCode == downKey)
 	{
-		camera.moveDown(false);
+		if(modifierKeys == GLUT_ACTIVE_SHIFT)
+		{
+			camera->moveDown(true);
+		}
+		else
+		{
+			camera->moveDown(false);
+		}
 	}
 	else if(keyCode == forwardKey)
 	{
-		camera.moveForward(false);
+		if(modifierKeys == GLUT_ACTIVE_SHIFT)
+		{
+			camera->moveForward(true);
+		}
+		else
+		{
+			camera->moveForward(false);
+		}
 	}
 	else if(keyCode == leftKey)
 	{
-		camera.moveLeft(false);
+		if(modifierKeys == GLUT_ACTIVE_SHIFT)
+		{
+			camera->moveLeft(true);
+		}
+		else
+		{
+			camera->moveLeft(false);
+		}
 	}
 	else if(keyCode == rightKey)
 	{
-		camera.moveRight(false);
+		if(modifierKeys == GLUT_ACTIVE_SHIFT)
+		{
+			camera->moveRight(true);
+		}
+		else
+		{
+			camera->moveRight(false);
+		}
 	}
 	else if(keyCode == upKey)
 	{
-		camera.moveUp(false);
+		if(modifierKeys == GLUT_ACTIVE_SHIFT)
+		{
+			camera->moveUp(true);
+		}
+		else
+		{
+			camera->moveUp(false);
+		}
 	}
 	else if(keyCode == wiredKey)
 	{
@@ -218,8 +243,8 @@ void GLCore::mouseClick(int buttonCode, int buttonState, int positionX, int posi
 
 void GLCore::mouseActiveMotion(int positionX, int positionY)
 {
-	camera.panHorizontally(oldMouseX - positionX);
-	camera.panVertically(oldMouseY - positionY);
+	camera->panHorizontally(oldMouseX - positionX);
+	camera->panVertically(oldMouseY - positionY);
 
 	oldMouseX = positionX;
 	oldMouseY = positionY;

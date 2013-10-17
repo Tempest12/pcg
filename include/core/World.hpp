@@ -1,5 +1,5 @@
-#ifndef _WORLD_CPP
-#define _WORLD_CPP
+#ifndef _CORE_WORLD_CPP
+#define _CORE_WORLD_CPP
 
 #include <vector>
 
@@ -15,10 +15,11 @@ namespace Core
 	public:
 
 		int boundarySize;
+		float tileSize;
 
 		Terrain::Generator generator;
 
-		Util::CoordsToTileHash tiles;
+		Util::CoordsToTileHash tileHash;
 
 	protected:
 	private:		
@@ -29,7 +30,7 @@ namespace Core
 		World(void);
 		~World(void);
 
-		void draw(Math::Vector3f* cameraPosition);
+		void draw(Math::Vector3f* cameraPosition, bool wired);
 
 	protected:
 	private:

@@ -1,5 +1,5 @@
-#ifndef _MAIN_HPP
-#define _MAIN_HPP
+#ifndef _MAIN_MAIN_HPP
+#define _MAIN_MAIN_HPP
 
 class string;
 

@@ -1,5 +1,5 @@
-#ifndef _FILE_SYSTEM_HPP
-#define _FILE_SYSTEM_HPP
+#ifndef _PORT_FILE_SYSTEM_HPP
+#define _PORT_FILE_SYSTEM_HPP
 namespace Port
 {
 	namespace FileSystem

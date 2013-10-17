@@ -1,5 +1,5 @@
-#ifndef _GENERATOR_HPP
-#define _GENERATOR_HPP
+#ifndef _TERRAIN_GENERATOR_HPP
+#define _TERRAIN_GENERATOR_HPP
 
 #include <terrain/Tile.hpp>
 
@@ -10,6 +10,7 @@ namespace Terrain
 	//Variables:
 	public:
 
+		int steps;
 		float tileSize;
 
 	protected:
@@ -20,7 +21,7 @@ namespace Terrain
 
 		Generator(void);
 
-		Tile* newTile(float x, float z, int steps);
+		Tile* newTile(float x, float z);
 
 	protected:
 	private:
