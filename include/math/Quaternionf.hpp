@@ -9,7 +9,10 @@ namespace Math
 	//Variables:
 	public:
 
-		float
+		float x;
+		float y;
+		float z;
+		float w;
 
 	protected:
 	private:
@@ -18,7 +21,17 @@ namespace Math
 	public:
 
 		Quaternionf(void);
+		Quaternionf(Quaternionf* that);
 		~Quaternionf(void);
+
+		void conjugate(void);
+
+		float length(void);
+
+		void multiply(Quaternionf* that);
+
+		void normalize(void);
+
 
 	protected:
 	private:

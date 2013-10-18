@@ -18,14 +18,17 @@ section generator
 
 	subdivisions 4
 
-	random_subdivide no
+	random_subdivide yes
 }
 
 section render
 {
 	smooth_shading no
 
-	boundary_size 2
+	cpu_boundary_size 7
+	render_boundary_size 4
+	gpu_boundary_size 4
+
 
 	use_buffers yes
 }

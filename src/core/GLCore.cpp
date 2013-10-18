@@ -146,7 +146,7 @@ void GLCore::draw(void)
 	glLightfv(GL_LIGHT0, GL_SPECULAR, whiteLight);
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientColour);
 
-	world->draw(&camera->position, wired);
+	world->draw(camera, wired);
 
 	glutSwapBuffers();
 }

@@ -14,8 +14,8 @@ namespace Core
 		float runSpeed;
 		float walkSpeed;
 
-		float horizontalAngle;
-		float verticalAngle;
+		float pitch;
+		float yaw;
 
 		Math::Vector3f direction;
 		Math::Vector3f focalPoint;

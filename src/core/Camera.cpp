@@ -5,6 +5,7 @@
 
 #include "core/Camera.hpp"
 #include "math/Vector3f.hpp"
+#include "math/Quaternionf.hpp"
 #include "math/Util.hpp"
 #include "util/Config.hpp"
 
@@ -17,8 +18,8 @@ Camera::Camera(void)
 	this->runSpeed  = Util::Config::convertSettingToFloat("camera", "run_speed");
 	this->walkSpeed = Util::Config::convertSettingToFloat("camera", "walk_speed");
 
-	this->horizontalAngle = 270.0f;
-	this->verticalAngle = 90.0f;
+	this->yaw = 270.0f;
+	this->pitch = 90.0f;
 
 	this->direction = Math::Vector3f();
 	this->focalPoint = Math::Vector3f();
@@ -34,8 +35,8 @@ Camera::Camera(float x, float y, float z)
 	this->runSpeed  = Util::Config::convertSettingToFloat("camera", "run_speed");
 	this->walkSpeed = Util::Config::convertSettingToFloat("camera", "walk_speed");
 
-	this->horizontalAngle = 270.0f;
-	this->verticalAngle = 90.0f;
+	this->yaw = 270.0f;
+	this->pitch = 90.0f;
 
 	this->position = Math::Vector3f(x, y, z);
 	this->direction = Math::Vector3f();
@@ -50,9 +51,6 @@ void Camera::applyTransformation(void)
 	this->focalPoint.copy(&this->position);
 	this->focalPoint.add(&this->direction);
 
-	//std::cout << "Poision: " << this->position << std::endl;
-	//std::cout << "Focal Point: " << this->focalPoint << std::endl << std::endl;
-
 	gluLookAt(this->position.x  , this->position.y  , this->position.z,
 			  this->focalPoint.x, this->focalPoint.y, this->focalPoint.z,
 			  this->upVector.x  , this->upVector.y  , this->upVector.z);
@@ -60,9 +58,9 @@ void Camera::applyTransformation(void)
 
 void Camera::calculateDirection(void)
 {
-	this->direction.x = sin(Math::Util::degreesToRadians(this->verticalAngle)) * cos(Math::Util::degreesToRadians(this->horizontalAngle));
-	this->direction.y = cos(Math::Util::degreesToRadians(this->verticalAngle));
-	this->direction.z = sin(Math::Util::degreesToRadians(this->verticalAngle)) * sin(Math::Util::degreesToRadians(this->horizontalAngle));
+	this->direction.x = sin(Math::Util::degreesToRadians(this->pitch)) * cos(Math::Util::degreesToRadians(this->yaw));
+	this->direction.y = cos(Math::Util::degreesToRadians(this->pitch));
+	this->direction.z = sin(Math::Util::degreesToRadians(this->pitch)) * sin(Math::Util::degreesToRadians(this->yaw));
 }
 
 void Camera::moveBackward(bool running)
@@ -169,34 +167,23 @@ void Camera::moveUp(bool running)
 
 void Camera::panHorizontally(float magnitude)
 {
-	this->horizontalAngle -= magnitude * this->panSpeed;
-	this->horizontalAngle = fmod(this->horizontalAngle, 360.0f);
-
-    if(fmod(this->horizontalAngle, 90.0f) == 0)
-    {
-    	this->horizontalAngle += 1.0f;
-    }
-
-    if(this->horizontalAngle < 0)
-    {
-    	this->upVector.y = -1.0f;
-    }
-    else
-    {
-    	this->upVector.y = 1.0f;
-    }
+	this->yaw -= magnitude * this->panSpeed;
+	this->yaw = fmod(this->yaw, 360.0f);
 
 	this->calculateDirection();
 }
 
 void Camera::panVertically(float magnitude)
 {
-	this->verticalAngle -= magnitude * this->panSpeed;
-	this->verticalAngle = fmod(this->verticalAngle, 360.0f);
+	this->pitch -= magnitude * this->panSpeed;
 
-	if(fmod(this->verticalAngle, 90.0f) == 0)
+	if(this->pitch >= 180.0f)
 	{
-		this->verticalAngle += 1.0f;
+		this->pitch = 180.f - this->panSpeed;
+	}
+	if(this->pitch <= 0.0f)
+	{
+		this->pitch = this->panSpeed;
 	}
 
 	this->calculateDirection();

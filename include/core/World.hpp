@@ -3,6 +3,7 @@
 
 #include <vector>
 
+#include "core/Camera.hpp"
 #include "math/Vector3f.hpp"
 #include "terrain/Generator.hpp"
 #include "util/HashTypes.hpp"
@@ -14,7 +15,10 @@ namespace Core
 	//Variable:
 	public:
 
-		int boundarySize;
+		int cpuBoundarySize;
+		int gpuBoundarySize;
+		int renderBoundarySize;
+
 		float tileSize;
 
 		Terrain::Generator generator;
@@ -30,7 +34,8 @@ namespace Core
 		World(void);
 		~World(void);
 
-		void draw(Math::Vector3f* cameraPosition, bool wired);
+		void draw(Camera* camera, bool wired);
+		void maintainTiles(Math::Vector3f* position);
 
 	protected:
 	private:
