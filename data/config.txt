@@ -16,7 +16,7 @@ section generator
 	height_scale 15.0f
 	tile_size 30.0f
 
-	subdivisions 4
+	subdivisions 6
 
 	random_subdivide yes
 }
@@ -26,9 +26,8 @@ section render
 	smooth_shading no
 
 	cpu_boundary_size 7
-	render_boundary_size 4
+	render_boundary_size 3
 	gpu_boundary_size 4
-
 
 	use_buffers yes
 }
@@ -39,6 +38,10 @@ section camera
 	run_speed 1.5f
 
 	pan_speed 0.55f
+
+	near_clip 1.0f
+
+	far_clip 200f
 }
 
 section controls
@@ -51,4 +54,34 @@ section controls
 	down q
 
 	wired t
+}
+
+section lighting
+{
+	ambient_red   0.21f
+	ambient_green 0.21f
+	ambient_blue  0.21f
+	ambient_alpha 1.0f
+
+	light_diffuse_red   0.6f
+	light_diffuse_green 0.6f
+	light_diffuse_blue  0.6f
+	light_diffuse_alpha 1.0f
+
+	light_specular_red   0.4f
+	light_specular_green 0.4f
+	light_specular_blue  0.4f
+	light_specular_alpha 1.0f
+
+	mat_diffuse_red   0.7f
+	mat_diffuse_green 0.7f
+	mat_diffuse_blue  0.7f
+	mat_diffuse_alpha 1.0f
+
+	mat_specular_red   0.33f
+	mat_specular_green 0.33f
+	mat_specular_blue  0.33f
+	mat_specular_alpha 1.0
+
+	mat_shininess 0.25f
 }

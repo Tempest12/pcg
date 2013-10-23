@@ -1,6 +1,7 @@
 #ifndef _TERRAIN_TILE_HPP
 #define _TERRAIN_TILE_HPP
 
+#include <iostream>
 #include <random>
 
 #include <GL/glut.h>
@@ -22,6 +23,7 @@ namespace Terrain
 			// 0 -> Vertex Buffer
 			// 1 -> Index Buffer
 			// 2 -> Normal Buffer
+		bool hasBuffers;
 
 		//Subdividing Data
 		int round;
@@ -34,14 +36,13 @@ namespace Terrain
 	protected:
 	private:
 
-		bool hasBuffers;
-
 	//Methods:
 	public:
 
 		Tile(int xCoord, int zCoord, float size);
 		~Tile();
 
+		void deleteBuffers(void);
 		void draw(bool wired);
 		void prepareDraw(void);
 		void subDivide(void);
@@ -50,7 +51,6 @@ namespace Terrain
 	private:
 		float** buildArray(int count);
 		void deleteArray(void);
-		void deleteBuffers(void);
 
 		unsigned int indexBufferIndex(unsigned int row, unsigned int col);
 		unsigned int numberOfPoints(int level);

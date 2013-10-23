@@ -182,49 +182,8 @@ void Tile::prepareDraw(void)
 	//Normal Buffer:
 	if(Util::Config::convertSettingToBool("render", "smooth_shading"))
 	{
-		Math::Vector3f currentPoint = Math::Vector3f();
-		Math::Vector3f edgeOne = Math::Vector3f();
-		Math::Vector3f edgeTwo = Math::Vector3f();
+		//Smooth Shading:
 
-		for(unsigned int row = 0; row < this->pointsCount - 1; row++)
-		{
-			for(unsigned int col = 0; col < this->pointsCount - 1; col++)
-			{
-				//Set Current Point
-				currentPoint.x = startX + (delta * col);
-				currentPoint.y = this->points[row][col];
-				currentPoint.z = startZ + (delta * row);
-
-				//Set Up Point:
-				edgeOne.x = currentPoint.x;
-				edgeOne.y = this->points[row + 1][col];
-				edgeOne.z = currentPoint.z + delta;
-
-				//Set Right Point:
-				edgeTwo.x = currentPoint.x + delta;
-				edgeTwo.y = this->points[row][col + 1];
-				edgeTwo.z = currentPoint.z;
-
-				//Create Edge Vectors:
-				edgeOne.subtract(&currentPoint);
-				edgeTwo.subtract(&currentPoint);
-
-				edgeOne.crossProduct(&edgeTwo);
-				edgeOne.normalize();
-
-				//Set X:
-				normalData[vertexBufferIndex(row, col, 0)] = edgeOne.x;
-
-				//Set Y:
-				normalData[vertexBufferIndex(row, col, 1)] = edgeOne.y;
-
-				//Set Z:
-				normalData[vertexBufferIndex(row, col, 2)] = edgeOne.z;
-			}
-		}
-	}
-	else
-	{
 		Math::Vector3f currentPoint = Math::Vector3f();
 		Math::Vector3f edgeOne = Math::Vector3f();
 		Math::Vector3f edgeTwo = Math::Vector3f();
@@ -327,6 +286,49 @@ void Tile::prepareDraw(void)
 			}
 		}
 	}
+	else //Flat Shading
+	{
+		Math::Vector3f currentPoint = Math::Vector3f();
+		Math::Vector3f edgeOne = Math::Vector3f();
+		Math::Vector3f edgeTwo = Math::Vector3f();
+
+		for(unsigned int row = 0; row < this->pointsCount - 1; row++)
+		{
+			for(unsigned int col = 0; col < this->pointsCount - 1; col++)
+			{
+				//Set Current Point
+				currentPoint.x = startX + (delta * col);
+				currentPoint.y = this->points[row][col];
+				currentPoint.z = startZ + (delta * row);
+
+				//Set Up Point:
+				edgeOne.x = currentPoint.x;
+				edgeOne.y = this->points[row + 1][col];
+				edgeOne.z = currentPoint.z + delta;
+
+				//Set Right Point:
+				edgeTwo.x = currentPoint.x + delta;
+				edgeTwo.y = this->points[row][col + 1];
+				edgeTwo.z = currentPoint.z;
+
+				//Create Edge Vectors:
+				edgeOne.subtract(&currentPoint);
+				edgeTwo.subtract(&currentPoint);
+
+				edgeOne.crossProduct(&edgeTwo);
+				edgeOne.normalize();
+
+				//Set X:
+				normalData[vertexBufferIndex(row, col, 0)] = edgeOne.x;
+
+				//Set Y:
+				normalData[vertexBufferIndex(row, col, 1)] = edgeOne.y;
+
+				//Set Z:
+				normalData[vertexBufferIndex(row, col, 2)] = edgeOne.z;
+			}
+		}
+	}
 
 	//Delete the Old Buffers(if there are any)
 	this->deleteBuffers();
@@ -421,12 +423,12 @@ float** Tile::buildArray(int count)
 
 void Tile::deleteArray(void)
 {
-	for(unsigned int index = 0; index < this->pointsCount; index++)
-	{
-		delete[] this->points[index];
-	}
+		for(unsigned int index = 0; index < this->pointsCount; index++)
+		{
+			delete[] this->points[index];
+		}
 
-	delete[] this->points;
+		delete[] this->points;
 }
 
 void Tile::deleteBuffers(void)

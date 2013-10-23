@@ -18,11 +18,11 @@ static bool status;
 static std::ofstream file;
 static std::chrono::system_clock::time_point currentTime;
 
-static const std::string debugPrefix   = " DBUG                     : ";
-static const std::string infoPrefix    = "      INFO                : ";
-static const std::string errorPrefix   = "           EROR           : ";
-static const std::string fatalPrefix   = "                FTAL      : ";
-static const std::string specialPrefix = "                     SPCL : ";
+static const std::string debugPrefix   = "  DBUG                     : ";
+static const std::string infoPrefix    = "       INFO                : ";
+static const std::string errorPrefix   = "            EROR           : ";
+static const std::string fatalPrefix   = "                 FTAL      : ";
+static const std::string specialPrefix = "                      SPCL : ";
 
 bool Log::init(bool append, int level)
 {

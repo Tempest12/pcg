@@ -27,6 +27,9 @@ using namespace Core;
 static int width;
 static int height;
 
+static float nearClip;
+static float farClip;
+
 static int windowID;
 
 static std::chrono::high_resolution_clock::time_point lastClock;
@@ -49,7 +52,15 @@ static char rightKey;
 static char upKey;
 static char wiredKey;
 
+//Lighting Stuff:
+static float* ambientLighting;
 
+static float* lightDiffuse;
+static float* lightSpecular;
+
+static float* materialDiffuse;
+static float* materialSpecular;
+static float* materialShininess;
 
 
 void GLCore::init(int argc, char** argv)
@@ -105,7 +116,11 @@ void GLCore::init(int argc, char** argv)
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();	
 	glViewport(0, 0, 300, 300);
-	gluPerspective(60, 1.0f, 1.0f, 100.0f);
+
+	nearClip = Util::Config::convertSettingToFloat("camera", "near_clip");
+	farClip = Util::Config::convertSettingToFloat("camera", "far_clip");
+
+	gluPerspective(60, 1.0f, nearClip, farClip);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -115,6 +130,40 @@ void GLCore::init(int argc, char** argv)
 	glEnable(GL_COLOR_MATERIAL);
 
 	glEnable(GL_LIGHT0);
+
+	//Speaking of lights let's load the light and material colours here:
+	ambientLighting = new float[4];
+	ambientLighting[0] = Util::Config::convertSettingToFloat("lighting", "ambient_red");
+	ambientLighting[1] = Util::Config::convertSettingToFloat("lighting", "ambient_green");
+	ambientLighting[2] = Util::Config::convertSettingToFloat("lighting", "ambient_blue");
+	ambientLighting[3] = Util::Config::convertSettingToFloat("lighting", "ambient_alpha");
+
+	lightDiffuse = new float[4];
+	lightDiffuse[0] = Util::Config::convertSettingToFloat("lighting", "light_diffuse_red");
+	lightDiffuse[1] = Util::Config::convertSettingToFloat("lighting", "light_diffuse_green");
+	lightDiffuse[2] = Util::Config::convertSettingToFloat("lighting", "light_diffuse_blue");
+	lightDiffuse[3] = Util::Config::convertSettingToFloat("lighting", "light_diffuse_alpha");
+
+	lightSpecular = new float[4];
+	lightSpecular[0] = Util::Config::convertSettingToFloat("lighting", "light_specular_red");
+	lightSpecular[1] = Util::Config::convertSettingToFloat("lighting", "light_specular_green");
+	lightSpecular[2] = Util::Config::convertSettingToFloat("lighting", "light_specular_blue");
+	lightSpecular[3] = Util::Config::convertSettingToFloat("lighting", "light_specular_alpha");
+
+	materialDiffuse = new float[4];
+	materialDiffuse[0] = Util::Config::convertSettingToFloat("lighting", "mat_diffuse_red");
+	materialDiffuse[1] = Util::Config::convertSettingToFloat("lighting", "mat_diffuse_green");
+	materialDiffuse[2] = Util::Config::convertSettingToFloat("lighting", "mat_diffuse_blue");
+	materialDiffuse[3] = Util::Config::convertSettingToFloat("lighting", "mat_diffuse_alpha");
+
+	materialSpecular = new float[4];
+	materialSpecular[0] = Util::Config::convertSettingToFloat("lighting", "mat_specular_red");
+	materialSpecular[1] = Util::Config::convertSettingToFloat("lighting", "mat_specular_green");
+	materialSpecular[2] = Util::Config::convertSettingToFloat("lighting", "mat_specular_blue");
+	materialSpecular[3] = Util::Config::convertSettingToFloat("lighting", "mat_specular_alpha");
+
+	materialShininess = new float;
+	*materialShininess = Util::Config::convertSettingToFloat("lighting", "mat_shininess");
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	wired = false;
@@ -127,25 +176,24 @@ void GLCore::draw(void)
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	glLoadIdentity();
 
-	float ambientColour[] = {0.21f, 0.21f, 0.21f, 1.0f};
 	float lightPosition[] = {0.0f, 100.0f, 0.0f, 0.0f};
-	float specularColour[] = {0.2f, 0.2f, 0.2f, 1.0f};
-	float diffuse[] = {0.33f, 0.33f, 0.33f, 1.0f};
-	float shininess = 0.5f;
-
-	float whiteLight[] = {0.5f, 0.5f, 0.5f, 1.0f};
 
 	//Apply Camera Transformation
 	camera->applyTransformation();
 
-	glMaterialfv(GL_FRONT, GL_SPECULAR, specularColour);
-	glMaterialfv(GL_FRONT, GL_SHININESS, &shininess);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
+	//Lighting Stuff:
+	glMaterialfv(GL_FRONT, GL_SPECULAR, materialSpecular);
+	glMaterialfv(GL_FRONT, GL_SHININESS, materialShininess);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, materialDiffuse);
+	
 	glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, whiteLight);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, whiteLight);
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientColour);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, materialDiffuse);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, materialSpecular);
+	
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientLighting);
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+	world->maintainTiles(&camera->position);
 	world->draw(camera, wired);
 
 	glutSwapBuffers();
