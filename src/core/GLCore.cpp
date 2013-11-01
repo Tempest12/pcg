@@ -182,9 +182,9 @@ void GLCore::draw(void)
 	camera->applyTransformation();
 
 	//Lighting Stuff:
-	glMaterialfv(GL_FRONT, GL_SPECULAR, materialSpecular);
-	glMaterialfv(GL_FRONT, GL_SHININESS, materialShininess);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, materialDiffuse);
+	//glMaterialfv(GL_FRONT, GL_SPECULAR, materialSpecular);
+	//glMaterialfv(GL_FRONT, GL_SHININESS, materialShininess);
+	//glMaterialfv(GL_FRONT, GL_DIFFUSE, materialDiffuse);
 	
 	glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, materialDiffuse);
@@ -193,6 +193,7 @@ void GLCore::draw(void)
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientLighting);
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+	world->maintainRegions(&camera->position);
 	world->maintainTiles(&camera->position);
 	world->draw(camera, wired);
 

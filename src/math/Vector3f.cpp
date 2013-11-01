@@ -90,6 +90,20 @@ void Vector3f::divideByScalar(float scalar)
 	this->z /= scalar;
 }
 
+float Vector3f::distance(Vector3f* that)
+{
+	return sqrt(this->distanceSquared(that));
+}
+
+float Vector3f::distanceSquared(Vector3f* that)
+{
+	float diffX = this->x - that->x;
+	float diffY = this->y - that->y;
+	float diffZ = this->z - that->z;
+
+	return (diffX * diffX) + (diffY * diffY) + (diffZ * diffZ);
+}
+
 float Vector3f::dotProduct(Vector3f* that)
 {
 	return (this->x * that->x) + (this->y * that->y) + (this->z * that->z);

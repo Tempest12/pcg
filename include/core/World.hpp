@@ -19,11 +19,15 @@ namespace Core
 		int gpuBoundarySize;
 		int renderBoundarySize;
 
-		float tileSize;
+		int regionBoundarySize;
 
-		Terrain::Generator generator;
+		float tileSize;
+		float regionSize;
+
+		Terrain::Generator* generator;
 
 		Util::CoordsToTileHash tileHash;
+		Util::CoordsToRegionHash regionHash;
 
 	protected:
 	private:		
@@ -35,6 +39,7 @@ namespace Core
 		~World(void);
 
 		void draw(Camera* camera, bool wired);
+		void maintainRegions(Math::Vector3f* position);
 		void maintainTiles(Math::Vector3f* position);
 
 	protected:

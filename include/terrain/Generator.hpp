@@ -1,7 +1,9 @@
 #ifndef _TERRAIN_GENERATOR_HPP
 #define _TERRAIN_GENERATOR_HPP
 
-#include <terrain/Tile.hpp>
+#include "terrain/Region.hpp"
+#include "terrain/Tile.hpp"
+#include "util/HashTypes.hpp"
 
 namespace Terrain
 {
@@ -12,6 +14,9 @@ namespace Terrain
 
 		int steps;
 		float tileSize;
+		float regionSize;
+
+		Util::CoordsToRegionHash* regionMap;
 
 	protected:
 	private:
@@ -19,9 +24,12 @@ namespace Terrain
 	//Functions:
 	public:
 
-		Generator(void);
+		Generator(Util::CoordsToRegionHash* regionMap);
 
-		Tile* newTile(float x, float z);
+		Biome* getClosestBiome(int xCoord, int zCoord);
+
+		Region* newRegion(float x, float z);
+		Tile*   newTile(float x, float z);
 
 	protected:
 	private:

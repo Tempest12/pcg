@@ -5,6 +5,7 @@
 #include <unordered_map>
 
 #include "util/StringLib.hpp"
+#include "terrain/Region.hpp"
 #include "terrain/Tile.hpp"
 
 namespace Util
@@ -14,6 +15,8 @@ namespace Util
 
 	//Custom Types:
 	typedef std::unordered_map<int*, Terrain::Tile*, Terrain::TileHasher, Terrain::TileKeyEquals> CoordsToTileHash;
+
+	typedef std::unordered_map<int*, Terrain::Region*, Terrain::RegionHasher, Terrain::RegionKeyEquals> CoordsToRegionHash;
 }
 
 #endif

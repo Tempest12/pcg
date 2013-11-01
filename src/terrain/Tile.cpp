@@ -1,10 +1,14 @@
 #include <iostream>
+#include <random>
+#include <sstream>
 
 #include <math.h>
 #include <GL/glew.h>
 #include <GL/glut.h>
 
 #include "math/Vector3f.hpp"
+#include "terrain/Biome.hpp"
+#include "terrain/Generator.hpp"
 #include "terrain/Tile.hpp"
 #include "util/Config.hpp"
 
@@ -14,12 +18,14 @@ using namespace Terrain;
 //Defines:
 #define BUFFERCOUNT 3
 
-Tile::Tile(int xCoord, int zCoord, float size)
+Tile::Tile(int xCoord, int zCoord, float size, Generator* generator)
 {
 	//Location Data:
 	this->xCoord = xCoord;
 	this->zCoord = zCoord;
 	this->size   = size;
+
+	this->biome = generator->getClosestBiome(xCoord, zCoord);
 
 	//Rendering Data:
 	this->bufferIDs = new unsigned int[BUFFERCOUNT];
@@ -68,6 +74,9 @@ void Tile::draw(bool wired)
 
 	if(Util::Config::convertSettingToBool("render", "use_buffers") && this->hasBuffers)
 	{
+		glMaterialfv(GL_FRONT, GL_DIFFUSE, biome->colour);
+		glColor4fv(biome->colour);
+
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glEnableClientState(GL_NORMAL_ARRAY);
 
@@ -407,6 +416,15 @@ void Tile::subDivide(void)
 	this->indexCount *= 4;
 }
 
+std::string Tile::toString(void)
+{
+	std::stringstream stream;
+
+	stream << this;
+	stream << " Tile X: " << this->xCoord << " Z: " << this->zCoord;
+
+	return stream.str();
+}
 
 //Private:
 float** Tile::buildArray(int count)
@@ -477,7 +495,7 @@ void Tile::init(void)
 {
 	kValue = Util::Config::convertSettingToInt("generator", "height_scale");
 	hValue = Util::Config::convertSettingToFloat("generator", "h_value");
-	randomBump = Util::Config::convertSettingToInt("generator", "random_bump");
+	randomBump = Util::Config::convertSettingToInt("generator", "tile_random_bump");
 }
 
 float Tile::middleHeight(int xCoord, int zCoord)

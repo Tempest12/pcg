@@ -9,25 +9,39 @@ section window
 
 section generator
 {
-	random_bump 117.0f
+	#Terrain Stuff:
+
+	tile_random_bump 117.0f
 
 	h_value 1.365f
 
 	height_scale 15.0f
-	tile_size 30.0f
 
-	subdivisions 6
+	tile_size 30.0f
+	region_size 250.0f
+
+	subdivisions 5
 
 	random_subdivide yes
+
+	#Region Stuff:
+	biome_density 3
+
+	region_random_bump 3085
+
+	desert_chance 0.5
+
+	desert_height    15.0
+	mountain_height 15.0
 }
 
 section render
 {
 	smooth_shading no
 
-	cpu_boundary_size 7
-	render_boundary_size 3
-	gpu_boundary_size 4
+	cpu_boundary_size 10
+	render_boundary_size 5
+	gpu_boundary_size 7
 
 	use_buffers yes
 }
@@ -41,7 +55,7 @@ section camera
 
 	near_clip 1.0f
 
-	far_clip 200f
+	far_clip 400f
 }
 
 section controls
@@ -54,6 +68,19 @@ section controls
 	down q
 
 	wired t
+}
+
+section colours
+{
+	desert_red   0.8
+	desert_green 0.65
+	desert_blue  0.1
+	desert_alpha 1.0
+
+	mountain_red   0.0
+	mountain_green 0.6 
+	mountain_blue  0.6
+	mountain_alpha 1.0
 }
 
 section lighting

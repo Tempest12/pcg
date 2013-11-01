@@ -8,6 +8,9 @@
 
 namespace Terrain
 {
+	class Biome;
+	class Generator;
+
 	class Tile
 	{
 	//Variables:
@@ -17,6 +20,8 @@ namespace Terrain
 		float   size;                                                                                                                                                                                                                                                                                                                                                                                                            
 		int   xCoord;
 		int   zCoord;
+
+		Biome* biome;
 
 		//Rendering Data
 		unsigned int* bufferIDs;
@@ -39,13 +44,14 @@ namespace Terrain
 	//Methods:
 	public:
 
-		Tile(int xCoord, int zCoord, float size);
+		Tile(int xCoord, int zCoord, float size, Generator* generator);
 		~Tile();
 
 		void deleteBuffers(void);
 		void draw(bool wired);
 		void prepareDraw(void);
 		void subDivide(void);
+		std::string toString(void);
 
 	protected:
 	private:
@@ -73,6 +79,7 @@ namespace Terrain
 	//Methods:
 	public:
 
+		//static Biome* getClosestBiome(int xCoord, int zCoord, Util::CoordsToRegionHash* regionHash);
 		static int getSeed(int xCoord, int zCoord, float seedMax);
 		static void init(void);
 		static float middleHeight(int xCoord, int zCoord);
