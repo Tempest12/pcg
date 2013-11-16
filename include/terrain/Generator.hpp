@@ -14,7 +14,9 @@ namespace Terrain
 
 		int steps;
 		float tileSize;
+		float tileDistance;
 		float regionSize;
+		float transitionSize;
 
 		Util::CoordsToRegionHash* regionMap;
 
@@ -26,10 +28,10 @@ namespace Terrain
 
 		Generator(Util::CoordsToRegionHash* regionMap);
 
-		Biome* getClosestBiome(int xCoord, int zCoord);
+		void getClosestBiome(int xCoord, int zCoord, Tile* tile);
 
-		Region* newRegion(float x, float z);
-		Tile*   newTile(float x, float z);
+		Region* newRegion(int x, int z);
+		Tile*   newTile(int x, int z);
 
 	protected:
 	private:

@@ -15,21 +15,26 @@ section generator
 
 	h_value 1.365f
 
-	height_scale 15.0f
+	height_scale 0.0f
 
-	tile_size 30.0f
-	region_size 250.0f
+	tile_size 5.0f
+	region_size 300.0f
 
-	subdivisions 5
+	subdivisions 2
 
-	random_subdivide yes
+	random_subdivide no
 
 	#Region Stuff:
-	biome_density 3
+	biome_density 1
+
+	transition_size 40f
 
 	region_random_bump 3085
 
-	desert_chance 0.5
+	desert_chance   0.33f
+	jungle_chance   0.33f
+	mountain_chance 0.33f
+	snow_chance     0.00f
 
 	desert_height    15.0
 	mountain_height 15.0
@@ -39,9 +44,9 @@ section render
 {
 	smooth_shading no
 
-	cpu_boundary_size 10
-	render_boundary_size 5
-	gpu_boundary_size 7
+	cpu_boundary_size 40
+	render_boundary_size 35
+	gpu_boundary_size 37
 
 	use_buffers yes
 }
@@ -49,13 +54,13 @@ section render
 section camera
 {
 	walk_speed 0.95f
-	run_speed 1.5f
+	run_speed 4.5f
 
 	pan_speed 0.55f
 
 	near_clip 1.0f
 
-	far_clip 400f
+	far_clip 600f
 }
 
 section controls
@@ -68,19 +73,35 @@ section controls
 	down q
 
 	wired t
+	regions y
 }
 
 section colours
 {
-	desert_red   0.8
-	desert_green 0.65
-	desert_blue  0.1
-	desert_alpha 1.0
+	desert_red     1.0f
+	desert_green   0.0f
+	desert_blue    0.0f
+	desert_alpha   1.0f
 
-	mountain_red   0.0
-	mountain_green 0.6 
-	mountain_blue  0.6
-	mountain_alpha 1.0
+	mountain_red   0.0f
+	mountain_green 0.0f
+	mountain_blue  1.0f
+	mountain_alpha 1.0f
+
+	jungle_red     0.0f
+	jungle_green   1.0f
+	jungle_blue    0.0f
+	jungle_alpha   1.0f
+
+	snow_red       1.0f
+	snow_green     1.0f
+	snow_blue      1.0f
+	snow_alpha     1.0f
+
+	region_red     0.0f
+	region_green   1.0f
+	region_blue    0.0f
+	region_alpha   1.0f
 }
 
 section lighting

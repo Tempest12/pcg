@@ -9,4 +9,4 @@ namespace Main
 }
 
 
-#endif //_MAIN_HPP
+#endif

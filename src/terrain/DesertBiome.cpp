@@ -14,6 +14,8 @@ DesertBiome::DesertBiome(float xCoord, float zCoord) : Biome(xCoord, zCoord)
 	this->colour[1] = Util::Config::convertSettingToFloat("colours", "desert_green");
 	this->colour[2] = Util::Config::convertSettingToFloat("colours", "desert_blue");
 	this->colour[3] = Util::Config::convertSettingToFloat("colours", "desert_alpha");
+
+	this->type = "Desert";
 }
 
 DesertBiome::~DesertBiome()

@@ -16,16 +16,27 @@
 using namespace Terrain;
 
 //Defines:
-#define BUFFERCOUNT 3
+#define BUFFERCOUNT 4
 
 Tile::Tile(int xCoord, int zCoord, float size, Generator* generator)
 {
+	float halfSize = size / 2.0f;
+
 	//Location Data:
 	this->xCoord = xCoord;
 	this->zCoord = zCoord;
 	this->size   = size;
 
-	this->biome = generator->getClosestBiome(xCoord, zCoord);
+	this->botLeftCorner  = new Math::Vector3f(xCoord * size - halfSize, 2.0f, zCoord * size - halfSize);
+	this->topLeftCorner  = new Math::Vector3f(xCoord * size - halfSize, 2.0f, zCoord * size + halfSize);
+	this->botRightCorner = new Math::Vector3f(xCoord * size + halfSize, 2.0f, zCoord * size - halfSize);
+	this->topRightCorner = new Math::Vector3f(xCoord * size + halfSize, 2.0f, zCoord * size + halfSize);
+
+	//Biome Stuff:
+	this->biomes = NULL;
+	this->transitionTile = false;
+	this->biomeCount = 1;
+	generator->getClosestBiome(xCoord, zCoord, this);
 
 	//Rendering Data:
 	this->bufferIDs = new unsigned int[BUFFERCOUNT];
@@ -55,14 +66,14 @@ Tile::Tile(int xCoord, int zCoord, float size, Generator* generator)
 
 Tile::~Tile()
 {
+	delete[] biomes;
+
 	this->deleteArray();
 	this->deleteBuffers();
 }
 
-void Tile::draw(bool wired)
+void Tile::draw(bool wired, bool drawBoundaries)
 {
-	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-	
 	if(wired)
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -74,11 +85,9 @@ void Tile::draw(bool wired)
 
 	if(Util::Config::convertSettingToBool("render", "use_buffers") && this->hasBuffers)
 	{
-		glMaterialfv(GL_FRONT, GL_DIFFUSE, biome->colour);
-		glColor4fv(biome->colour);
-
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glEnableClientState(GL_NORMAL_ARRAY);
+		glEnableClientState(GL_COLOR_ARRAY);
 
 		glBindBuffer(GL_ARRAY_BUFFER, bufferIDs[0]);
 		glVertexPointer(3, GL_FLOAT, 0, 0);
@@ -86,9 +95,13 @@ void Tile::draw(bool wired)
 		glBindBuffer(GL_ARRAY_BUFFER, bufferIDs[2]);
 		glNormalPointer(GL_FLOAT, 0, 0);
 
+		glBindBuffer(GL_ARRAY_BUFFER, bufferIDs[3]);
+		glColorPointer(4, GL_FLOAT, 0, 0);
+
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufferIDs[1]);
 		glDrawElements(GL_TRIANGLES, this->indexCount, GL_UNSIGNED_INT, 0);
 
+		glDisableClientState(GL_COLOR_ARRAY);
 		glDisableClientState(GL_VERTEX_ARRAY);
 		glDisableClientState(GL_NORMAL_ARRAY);
 
@@ -98,7 +111,7 @@ void Tile::draw(bool wired)
 	}
 	else
 	{
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		//At this point I would say this is legcacy code. Not entirely sure this works any more with all of the other changes
 
 		glBegin(GL_QUADS);
 		{
@@ -133,6 +146,7 @@ void Tile::prepareDraw(void)
 	float* vertexData = new float[vertexCount * 3];
 	unsigned int* indexData = new unsigned int[indexCount];
 	float* normalData = new float[vertexCount * 3];
+	float* colourData = new float[vertexCount * 4];
 
 	//Vertex Buffer:
 	for(unsigned int row = 0; row < this->pointsCount - 1; row++)
@@ -192,7 +206,6 @@ void Tile::prepareDraw(void)
 	if(Util::Config::convertSettingToBool("render", "smooth_shading"))
 	{
 		//Smooth Shading:
-
 		Math::Vector3f currentPoint = Math::Vector3f();
 		Math::Vector3f edgeOne = Math::Vector3f();
 		Math::Vector3f edgeTwo = Math::Vector3f();
@@ -339,6 +352,20 @@ void Tile::prepareDraw(void)
 		}
 	}
 
+	//Colour Buffer:
+	index =  0;
+
+	for(unsigned int row = 0; row < this->pointsCount - 1; row++)
+	{
+		for(unsigned int col = 0; col < this->pointsCount - 1; col++)
+		{
+			colourData[index++] = this->biomes[0]->colour[0];
+			colourData[index++] = this->biomes[0]->colour[1];
+			colourData[index++] = this->biomes[0]->colour[2];
+			colourData[index++] = this->biomes[0]->colour[3];
+		}
+	}
+
 	//Delete the Old Buffers(if there are any)
 	this->deleteBuffers();
 
@@ -362,6 +389,12 @@ void Tile::prepareDraw(void)
 	glBufferData(GL_ARRAY_BUFFER, vertexCount * sizeof(float) * 3, normalData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	delete[] normalData;
+
+	//Colour Buffer:
+	glBindBuffer(GL_ARRAY_BUFFER, bufferIDs[3]);
+	glBufferData(GL_ARRAY_BUFFER, vertexCount * sizeof(float) * 4, colourData, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	delete[] colourData;
 
 	this->hasBuffers = true;
 

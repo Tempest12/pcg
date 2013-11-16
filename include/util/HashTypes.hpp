@@ -8,6 +8,15 @@
 #include "terrain/Region.hpp"
 #include "terrain/Tile.hpp"
 
+//Forward Declarations:
+/*namespace Terrain
+{
+	class Region;
+	class Tile;
+
+}*/
+
+
 namespace Util
 {
 	//Basic Types:

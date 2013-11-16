@@ -31,14 +31,12 @@ World::World(void)
 	this->tileSize = Util::Config::convertSettingToFloat("generator", "tile_size");
 	this->regionSize = Util::Config::convertSettingToFloat("generator", "region_size");
 
-	std::cout << this->regionSize << std::endl;
-
 	//Figure out what the Region Boundary should be:
 	float tileSpace = cpuBoundarySize + cpuBoundarySize + 1;
 	tileSpace *= tileSize;
 
-	this->regionBoundarySize = ceil(tileSpace / this->regionSize);
-	this->regionBoundarySize++;
+	this->regionBoundarySize = ceil(tileSpace / this->regionSize) / 2;
+	this->regionBoundarySize += 2;
 
 	this->tileHash = Util::CoordsToTileHash();
 	this->regionHash = Util::CoordsToRegionHash();
@@ -50,34 +48,61 @@ World::~World(void)
 {
 }
 
-void World::draw(Camera* camera, bool wired)
+void World::draw(Camera* camera, bool wired, bool drawBoundaries)
 {
 	int currentTile[2];
 
-	int startRow = (int)(camera->position.z / this->tileSize) - this->renderBoundarySize;
-	int startCol = (int)(camera->position.x / this->tileSize) - this->renderBoundarySize;
-	int endRow = (int)(camera->position.z / this->tileSize) + this->renderBoundarySize;
-	int endCol = (int)(camera->position.x / this->tileSize) + this->renderBoundarySize;
+	int tileStartRow = (int)(camera->position.z / this->tileSize) - this->renderBoundarySize;
+	int tileStartCol = (int)(camera->position.x / this->tileSize) - this->renderBoundarySize;
+	int tileEndRow   = (int)(camera->position.z / this->tileSize) + this->renderBoundarySize;
+	int tileEndCol   = (int)(camera->position.x / this->tileSize) + this->renderBoundarySize;
+
+	Terrain::Tile* tile;
 
 	//Look at the Hash map and see if any tiles need to be generated either war draw it to.
-	for(currentTile[1] = startRow; currentTile[1] <= endRow; currentTile[1]++)
+	for(currentTile[1] = tileStartRow; currentTile[1] <= tileEndRow; currentTile[1]++)
 	{
-		for(currentTile[0] = startCol; currentTile[0] <= endCol; currentTile[0]++)
+		for(currentTile[0] = tileStartCol; currentTile[0] <= tileEndCol; currentTile[0]++)
 		{
-			Terrain::Tile* tile;
-
 			try
 			{
 				tile = this->tileHash.at(currentTile);
+				tile->draw(wired, drawBoundaries);
 			}
 			catch(std::out_of_range& oore)
 			{
 				std::cout << "Failed to find tile at coords X: " << currentTile[0] << " Z: " << currentTile[1] << std::endl;
-				std::cout << "Size: " << this->tileHash.size() << std::endl;
 				Main::die("Tile not ready to be drawn.");
 			}
+		}
+	}
 
-			tile->draw(wired);
+	if(drawBoundaries)
+	{
+		int currentRegion[2];
+
+		int regionStartRow = (int)(camera->position.z / this->regionSize) - this->regionBoundarySize;
+		int regionStartCol = (int)(camera->position.x / this->regionSize) - this->regionBoundarySize;
+		int regionEndRow   = (int)(camera->position.z / this->regionSize) + this->regionBoundarySize;
+		int regionEndCol   = (int)(camera->position.x / this->regionSize) + this->regionBoundarySize;
+
+		Terrain::Region* region;
+
+		for(currentRegion[1] = regionStartRow; currentRegion[1] <= regionEndRow; currentRegion[1]++)
+		{
+			for(currentRegion[0] = regionStartCol; currentRegion[0] <= regionEndCol; currentRegion[0]++)
+			{
+				try
+				{
+					region = this->regionHash.at(currentRegion);
+					region->draw();
+				}
+				catch(std::out_of_range& oore)
+				{
+					std::cout << "Failed to find region at coords X: " << currentRegion[0] << " Z: " << currentRegion[1] << std::endl;
+					Main::die("Region not ready to be drawn.");
+				}
+			}
 		}
 	}
 }
@@ -88,8 +113,8 @@ void World::maintainRegions(Math::Vector3f* position)
 
 	int startRow   = (int)(position->z / this->regionSize) - this->regionBoundarySize;
 	int startCol   = (int)(position->x / this->regionSize) - this->regionBoundarySize;
-	int endRow = (int)(position->z / this->regionSize) + this->regionBoundarySize;
-	int endCol = (int)(position->x / this->regionSize) + this->regionBoundarySize;
+	int endRow     = (int)(position->z / this->regionSize) + this->regionBoundarySize;
+	int endCol     = (int)(position->x / this->regionSize) + this->regionBoundarySize;
 
 	int coords[2];
 
@@ -156,13 +181,13 @@ void World::maintainTiles(Math::Vector3f* position)
 
 	int cpuStartRow = (int)(position->z / this->tileSize) - this->cpuBoundarySize;
 	int cpuStartCol = (int)(position->x / this->tileSize) - this->cpuBoundarySize;
-	int cpuEndRow = (int)(position->z / this->tileSize) + this->cpuBoundarySize;
-	int cpuEndCol = (int)(position->x / this->tileSize) + this->cpuBoundarySize;
+	int cpuEndRow   = (int)(position->z / this->tileSize) + this->cpuBoundarySize;
+	int cpuEndCol   = (int)(position->x / this->tileSize) + this->cpuBoundarySize;
 
 	int gpuStartRow = (int)(position->z / this->tileSize) - this->gpuBoundarySize;
 	int gpuStartCol = (int)(position->x / this->tileSize) - this->gpuBoundarySize;
-	int gpuEndRow = (int)(position->z / this->tileSize) + this->gpuBoundarySize;
-	int gpuEndCol = (int)(position->x / this->tileSize) + this->gpuBoundarySize;
+	int gpuEndRow   = (int)(position->z / this->tileSize) + this->gpuBoundarySize;
+	int gpuEndCol   = (int)(position->x / this->tileSize) + this->gpuBoundarySize;
 
 	int coords[2];
 	int* newKey;

@@ -1,7 +1,13 @@
 #ifndef _TERRAIN_BIOME_HPP
 #define _TERRAIN_BIOME_HPP
 
-#include "math/Vector3f.hpp"
+#include <string>
+
+//Forward declarations:
+namespace Math
+{
+	class Vector3f;
+}
 
 namespace Terrain
 {
@@ -16,6 +22,8 @@ namespace Terrain
 		float height;
 		float colour[4];
 
+		std::string type;
+
 	protected:
 	private:
 
@@ -27,6 +35,8 @@ namespace Terrain
 
 		virtual float* getColour(void);
 		virtual float  getHeight(void);
+		virtual void   printName(void);
+
 
 	protected:
 	private:

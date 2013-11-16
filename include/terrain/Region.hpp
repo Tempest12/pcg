@@ -16,6 +16,8 @@ namespace Terrain
 		int xCoord;
 		int zCoord;
 
+		float colour[4];
+
 		float regionSize;
 
 		Terrain::Biome** biomes;
@@ -29,6 +31,8 @@ namespace Terrain
 
 		Region(int xCoord, int zCoord, float regionSize);
 		~Region();
+
+		void draw(void);
 
 		float getClosestBiome(float xCoord, float zCoord, Biome** returnPointer);
 		std::minstd_rand::result_type getSeed(std::minstd_rand::result_type max);

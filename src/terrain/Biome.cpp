@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "math/Vector3f.hpp"
 #include "terrain/Biome.hpp"
 
@@ -14,6 +16,8 @@ Biome::Biome(float xCoord, float zCoord)
 	this->colour[1] = 1.0f;
 	this->colour[2] = 1.0f;
 	this->colour[3] = 1.0f;
+
+	this->type = "Nothing...";
 }
 
 Biome::~Biome()
@@ -28,4 +32,9 @@ float* Biome::getColour()
 float Biome::getHeight()
 {
 	return this->height;
+}
+
+void Biome::printName()
+{
+	std::cout << this->type << " " << *this->position << std::endl;
 }

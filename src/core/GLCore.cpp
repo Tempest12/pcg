@@ -42,7 +42,8 @@ static int oldMouseY = 0;
 
 static World* world;
 
-static bool wired;
+static bool wiredTiles;
+static bool drawBoundaries;
 
 static char backwardKey;
 static char downKey;
@@ -50,7 +51,8 @@ static char forwardKey;
 static char leftKey;
 static char rightKey;
 static char upKey;
-static char wiredKey;
+static char wiredTileKey;
+static char drawBoundaryKey;
 
 //Lighting Stuff:
 static float* ambientLighting;
@@ -80,7 +82,8 @@ void GLCore::init(int argc, char** argv)
 	leftKey = Util::Config::convertSettingToChar("controls", "left");
 	rightKey = Util::Config::convertSettingToChar("controls", "right");
 	upKey = Util::Config::convertSettingToChar("controls", "up");
-	wiredKey = Util::Config::convertSettingToChar("controls", "wired");
+	wiredTileKey = Util::Config::convertSettingToChar("controls", "wired");
+	drawBoundaryKey = Util::Config::convertSettingToChar("controls", "regions");
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -166,7 +169,8 @@ void GLCore::init(int argc, char** argv)
 	*materialShininess = Util::Config::convertSettingToFloat("lighting", "mat_shininess");
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	wired = false;
+	wiredTiles = false;
+	drawBoundaries = false;
 
 	world = new World();
 }
@@ -195,7 +199,7 @@ void GLCore::draw(void)
 
 	world->maintainRegions(&camera->position);
 	world->maintainTiles(&camera->position);
-	world->draw(camera, wired);
+	world->draw(camera, wiredTiles, drawBoundaries);
 
 	glutSwapBuffers();
 }
@@ -280,9 +284,13 @@ void GLCore::keyboard(unsigned char keyCode, int positionX, int positionY)
 			camera->moveUp(false);
 		}
 	}
-	else if(keyCode == wiredKey)
+	else if(keyCode == wiredTileKey)
 	{
-		wired = !wired;
+		wiredTiles = !wiredTiles;
+	}
+	else if(keyCode == drawBoundaryKey)
+	{
+		drawBoundaries = !drawBoundaries;
 	}
 }
 

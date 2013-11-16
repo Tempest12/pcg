@@ -1,3 +1,4 @@
+#include "math/Vector3f.hpp"
 #include "terrain/Biome.hpp"
 #include "terrain/MountainBiome.hpp"
 #include "util/Config.hpp"
@@ -14,7 +15,7 @@ MountainBiome::MountainBiome(float xCoord, float zCoord) : Biome(xCoord, zCoord)
 	this->colour[2] = Util::Config::convertSettingToFloat("colours", "mountain_blue");
 	this->colour[3] = Util::Config::convertSettingToFloat("colours", "mountain_alpha");
 
-	std::cout << "Mountain Biome X: " << xCoord << " Z: " << zCoord << std::endl;
+	this->type = "Mountain";
 }
 
 MountainBiome::~MountainBiome()

@@ -38,7 +38,7 @@ namespace Core
 		World(void);
 		~World(void);
 
-		void draw(Camera* camera, bool wired);
+		void draw(Camera* camera, bool wired, bool drawRegions);
 		void maintainRegions(Math::Vector3f* position);
 		void maintainTiles(Math::Vector3f* position);
 

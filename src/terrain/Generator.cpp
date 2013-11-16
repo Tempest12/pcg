@@ -6,28 +6,38 @@
 #include "main/Main.hpp"
 #include "terrain/Generator.hpp"
 #include "terrain/Region.hpp"
+#include "terrain/SnowBiome.hpp"
 #include "terrain/Tile.hpp"
 #include "util/Config.hpp"
 #include "util/HashTypes.hpp"
 
 using namespace Terrain;
 
+SnowBiome* snow;
+
 Generator::Generator(Util::CoordsToRegionHash* regionMap)
 {
-	this->tileSize   = Util::Config::convertSettingToFloat("generator", "tile_size");
-	this->regionSize = Util::Config::convertSettingToFloat("generator", "region_size"); 
+	this->tileSize       = Util::Config::convertSettingToFloat("generator", "tile_size");
+	this->regionSize     = Util::Config::convertSettingToFloat("generator", "region_size"); 
+	this->transitionSize = Util::Config::convertSettingToFloat("generator", "transition_size");
+
+	this->tileDistance = (tileSize * tileSize);
+	this->transitionSize *= this->transitionSize;
+	this->transitionSize /= 2.0f;
 
 	this->steps = Util::Config::convertSettingToInt("generator", "subdivisions");
 
 	this->regionMap = regionMap;
 
+	snow = new SnowBiome(0, 0);
+
 	Terrain::Tile::init();
 }
 
-Biome* Generator::getClosestBiome(int xCoord, int zCoord)
+void Generator::getClosestBiome(int xCoord, int zCoord, Tile* tile)
 {
 	Biome* biome;
-	Biome* closest;
+	Biome** closest = new Biome*[2];
 
 	int regionCoords[2];
 	regionCoords[0] = (int)(xCoord * this->tileSize / this->regionSize);
@@ -38,9 +48,9 @@ Biome* Generator::getClosestBiome(int xCoord, int zCoord)
 
 	int coords[2];
 
-	for(coords[1] = regionCoords[1] - 1;  coords[1] < regionCoords[1] + 2; coords[1]++)
+	for(coords[1] = regionCoords[1] - 1;  coords[1] <= regionCoords[1] + 1; coords[1]++)
 	{
-		for(coords[0] = regionCoords[0] - 1; coords[0] < regionCoords[0] + 2; coords[0]++)
+		for(coords[0] = regionCoords[0] - 1; coords[0] <= regionCoords[0] + 1; coords[0]++)
 		{
 			try
 			{
@@ -56,21 +66,33 @@ Biome* Generator::getClosestBiome(int xCoord, int zCoord)
 
 			if(distance < minDistance)
 			{
+				if(minDistance - distance <= transitionSize + tileDistance)
+				{
+					closest[0] = snow;
+				}
+				else
+				{
+					closest[0] = biome;
+				}
+
 				minDistance = distance;
-				closest = biome;
+			}
+			else if(distance - minDistance <= transitionSize + tileDistance)
+			{
+				closest[0] = snow;
 			}
 		}
 	}
 
-	return closest;
+	tile->biomes = closest;
 }
 
-Region* Generator::newRegion(float x, float z)
+Region* Generator::newRegion(int x, int z)
 {
 	return new Region(x, z, this->regionSize);
 }
 
-Tile* Generator::newTile(float x, float z)
+Tile* Generator::newTile(int x, int z)
 {
 	Tile* tile = new Tile(x, z, this->tileSize, (Generator*)this);
 

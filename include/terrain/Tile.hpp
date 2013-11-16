@@ -4,7 +4,12 @@
 #include <iostream>
 #include <random>
 
-#include <GL/glut.h>
+//Some Forward declarations:
+namespace Math
+{
+	class Vector3f;
+}
+
 
 namespace Terrain
 {
@@ -16,18 +21,28 @@ namespace Terrain
 	//Variables:
 	public:
 
-		//Location Data
+		//Location Data:
 		float   size;                                                                                                                                                                                                                                                                                                                                                                                                            
 		int   xCoord;
 		int   zCoord;
 
-		Biome* biome;
+		Math::Vector3f* botLeftCorner;
+		Math::Vector3f* topLeftCorner;
+		Math::Vector3f* botRightCorner;
+		Math::Vector3f* topRightCorner;
+
+		//Biome Data:
+		Biome** biomes;
+		int biomeCount;
+
+		bool transitionTile;
 
 		//Rendering Data
 		unsigned int* bufferIDs;
 			// 0 -> Vertex Buffer
 			// 1 -> Index Buffer
 			// 2 -> Normal Buffer
+			// 3 -> Colour Buffer
 		bool hasBuffers;
 
 		//Subdividing Data
@@ -48,7 +63,7 @@ namespace Terrain
 		~Tile();
 
 		void deleteBuffers(void);
-		void draw(bool wired);
+		void draw(bool wired, bool drawBoundaries);
 		void prepareDraw(void);
 		void subDivide(void);
 		std::string toString(void);
