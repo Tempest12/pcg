@@ -37,7 +37,9 @@ namespace Math
 		
 		void copy(Vector3f* that);
 		
+		float distance(float x, float y, float z);
 		float distance(Vector3f* that);
+		float distanceSquared(float x, float y, float z);
 		float distanceSquared(Vector3f* that);
 
 		float dotProduct(Vector3f* that);

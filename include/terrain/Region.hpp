@@ -34,7 +34,6 @@ namespace Terrain
 
 		void draw(void);
 
-		float getClosestBiome(float xCoord, float zCoord, Biome** returnPointer);
 		std::minstd_rand::result_type getSeed(std::minstd_rand::result_type max);
 		Biome* makeNewBiome(std::minstd_rand* random, std::poisson_distribution<int>* biomeDistribution);
 

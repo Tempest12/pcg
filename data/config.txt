@@ -17,17 +17,17 @@ section generator
 
 	height_scale 0.0f
 
-	tile_size 5.0f
+	tile_size 30.0f
 	region_size 300.0f
 
-	subdivisions 2
+	subdivisions 4
 
 	random_subdivide no
 
 	#Region Stuff:
 	biome_density 1
 
-	transition_size 40f
+	transition_size 8.0f
 
 	region_random_bump 3085
 
@@ -78,6 +78,8 @@ section controls
 
 section colours
 {
+	coloured_transitions yes
+
 	desert_red     1.0f
 	desert_green   0.0f
 	desert_blue    0.0f

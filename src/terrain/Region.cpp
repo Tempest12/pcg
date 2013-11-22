@@ -87,31 +87,10 @@ void Region::draw(void)
 
 			glColor4fv(this->biomes[index]->colour);
 			glTranslatef(this->biomes[index]->position->x, 0.1f, this->biomes[index]->position->z);
-			glutSolidSphere(1.0f, 8, 8);			
+			glutSolidSphere(1.5f, 8, 8);			
 
 		glPopMatrix();
 	}
-}
-
-float Region::getClosestBiome(float xCoord, float zCoord, Biome** returnPointer)
-{
-	Math::Vector3f tilePosition = Math::Vector3f(xCoord, 0.0f, zCoord);
-	float minDistance =  tilePosition.distanceSquared(this->biomes[0]->position);
-	float distance = 0.0f;
-	*returnPointer = this->biomes[0];
-
-	for(int index = 1; index < this->biomeCount; index++)
-	{
-		distance = tilePosition.distanceSquared(this->biomes[index]->position);
-
-		if(distance < minDistance)
-		{
-			minDistance = distance;
-			*returnPointer = this->biomes[index];
-		}
-	}
-
-	return minDistance;
 }
 
 std::minstd_rand::result_type Region::getSeed(std::minstd_rand::result_type maxSeed)

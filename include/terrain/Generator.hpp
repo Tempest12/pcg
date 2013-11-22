@@ -5,8 +5,15 @@
 #include "terrain/Tile.hpp"
 #include "util/HashTypes.hpp"
 
+namespace Math
+{
+	class Vector3f;
+}
+
 namespace Terrain
 {
+	class Biome;
+
 	class Generator
 	{
 	//Variables:
@@ -14,7 +21,6 @@ namespace Terrain
 
 		int steps;
 		float tileSize;
-		float tileDistance;
 		float regionSize;
 		float transitionSize;
 
@@ -28,10 +34,13 @@ namespace Terrain
 
 		Generator(Util::CoordsToRegionHash* regionMap);
 
-		void getClosestBiome(int xCoord, int zCoord, Tile* tile);
+		void getClosestBiome(Tile* tile);
+		void getClosestCornerBiome(int* regionCoords, Math::Vector3f* position, Biome** biome, float* minDistance);
 
 		Region* newRegion(int x, int z);
 		Tile*   newTile(int x, int z);
+
+		void setSecondClosestBiome(Tile* tile);
 
 	protected:
 	private:

@@ -2,6 +2,7 @@
 
 #include "math/Vector3f.hpp"
 #include "terrain/Biome.hpp"
+#include "util/StringLib.hpp"
 
 //Namespace this code belongs to:
 using namespace Terrain;
@@ -32,6 +33,11 @@ float* Biome::getColour()
 float Biome::getHeight()
 {
 	return this->height;
+}
+
+bool Biome::isSameType(Biome* that)
+{
+	return Util::StringLib::equalsIgnoreCase(&this->type, &that->type);
 }
 
 void Biome::printName()

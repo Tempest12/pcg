@@ -32,8 +32,18 @@ namespace Terrain
 		Math::Vector3f* topRightCorner;
 
 		//Biome Data:
-		Biome** biomes;
-		int biomeCount;
+		Biome* biome;
+		Biome* subBiome;
+
+		Biome* botLeftBiome[2];
+		Biome* topLeftBiome[2];
+		Biome* botRightBiome[2];
+		Biome* topRightBiome[2];
+
+		float botLeftDistance[2];
+		float topLeftDistance[2];
+		float botRightDistance[2];
+		float topRightDistance[2];
 
 		bool transitionTile;
 
@@ -64,7 +74,7 @@ namespace Terrain
 
 		void deleteBuffers(void);
 		void draw(bool wired, bool drawBoundaries);
-		void prepareDraw(void);
+		void prepareDraw(Generator* generator);
 		void subDivide(void);
 		std::string toString(void);
 

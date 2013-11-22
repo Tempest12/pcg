@@ -35,6 +35,9 @@ namespace Terrain
 
 		virtual float* getColour(void);
 		virtual float  getHeight(void);
+
+		virtual bool   isSameType(Biome* that);
+
 		virtual void   printName(void);
 
 
