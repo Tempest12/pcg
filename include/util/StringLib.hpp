@@ -18,6 +18,8 @@ namespace Util
 		bool contains(std::string* base, std::string* target);	
 		bool contains(std::string* base, const std::string& target);
 
+		bool endsWith(const std::string& base, const std::string& end);
+
 		bool equalsIgnoreCase(std::string& one, std::string& two);
 		bool equalsIgnoreCase(std::string& one, const std::string& two);	
 		bool equalsIgnoreCase(std::string* one, std::string* two);

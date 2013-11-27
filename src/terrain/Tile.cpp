@@ -149,7 +149,7 @@ void Tile::draw(bool wired, bool drawBoundaries)
 	}
 }
 
-void Tile::prepareDraw(void)
+void Tile::prepareDraw(Generator* generator)
 {
 	float delta = this->size / (this->pointsCount - 2);
 	float startX = (this->xCoord * this->size) - (this->size / 2.0f);
@@ -366,89 +366,52 @@ void Tile::prepareDraw(void)
 
 	//Colour Buffer:
 	index =  0;
+	Math::Vector3f vertexPosition = Math::Vector3f();
+	Biome* biomes[2];
+	int regionCoords[2];
+	float distances[2];
 
-	if(this->transitionTile)
+	float halfTransitionSize = generator->transitionSize / 2.0f;
+
+	for(unsigned int row = 0; row < this->pointsCount - 1; row++)
 	{
-		float halfTransitionSize = Util::Config::convertSettingToFloat("generator", "transition_size") / 2.0f;
-
-		float distanceOne = 0.0f;
-		float distanceTwo = 0.0f;
-
-		float diff = 0.0f;
-
-		float blendOne;
-		float blendTwo;
-
-		for(unsigned int row = 0; row < this->pointsCount - 1; row++)
+		for(unsigned int col = 0; col < this->pointsCount - 1; col++)
 		{
-			for(unsigned int col = 0; col < this->pointsCount - 1; col++)
+			regionCoords[0] =  (int)((startX + delta * col)/ generator->regionSize);
+			regionCoords[1] =  (int)((startZ + delta * row)/ generator->regionSize);
+
+			vertexPosition.x = vertexData[vertexBufferIndex(row, col, 0)];
+			vertexPosition.y = 0.0f;
+			vertexPosition.z = vertexData[vertexBufferIndex(row, col, 2)];
+
+			generator->getClosestCornerBiome(regionCoords, &vertexPosition, biomes, distances);
+
+			float diff = distances[1] - distances[0];
+
+			if(diff <= halfTransitionSize)
 			{
-				distanceOne = this->biome->position->distance(startX + delta * col, 0.0f, startZ + delta * row);
-				distanceTwo = this->subBiome->position->distance(startX + delta * col, 0.0f, startZ + delta * row);
+				float factor = diff / halfTransitionSize * 0.5f;
 
-				diff = distanceOne - distanceTwo;
+				/*colourData[index++] = factor * biomes[1]->colour[0] + (1.0f - factor) * biomes[0]->colour[0];
+				colourData[index++] = factor * biomes[1]->colour[1] + (1.0f - factor) * biomes[0]->colour[1];
+				colourData[index++] = factor * biomes[1]->colour[2] + (1.0f - factor) * biomes[0]->colour[2];
+				colourData[index++] = factor * biomes[1]->colour[3] + (1.0f - factor) * biomes[0]->colour[3];*/
 
-				/*if(abs(diff) <= halfTransitionSize)
-				{
-					if(diff < 0)
-					{
-						blendOne = abs(diff) / halfTransitionSize;
-						blendTwo = 1.0f - blendOne;
-					}
-					else
-					{
-						blendTwo = abs(diff) / halfTransitionSize;
-						blendOne = 1.0f - blendTwo;
-					}
-
-					if(Util::Config::convertSettingToBool("colours", "coloured_transitions"))
-					{
-						colourData[index++] = this->biome->colour[0] * blendOne + this->subBiome->colour[0] * blendTwo;
-						colourData[index++] = this->biome->colour[1] * blendOne + this->subBiome->colour[1] * blendTwo;
-						colourData[index++] = this->biome->colour[2] * blendOne + this->subBiome->colour[2] * blendTwo;
-						colourData[index++] = this->biome->colour[3] * blendOne + this->subBiome->colour[3] * blendTwo;
-					}
-					else
-					{
-						colourData[index++] = 1.0f;
-						colourData[index++] = 1.0f;
-						colourData[index++] = 1.0f;
-						colourData[index++] = 1.0f;
-					}
-				}
-				else //Outside transition zone:
-				{
-					if(diff < 0)
-					{
-						colourData[index++] = this->biome->colour[0];
-						colourData[index++] = this->biome->colour[1];
-						colourData[index++] = this->biome->colour[2];
-						colourData[index++] = this->biome->colour[3];
-					}
-					else
-					{
-						colourData[index++] = this->subBiome->colour[0];
-						colourData[index++] = this->subBiome->colour[1];
-						colourData[index++] = this->subBiome->colour[2];
-						colourData[index++] = this->subBiome->colour[3];
-					}
-				}*/
+				colourData[index++] = 1.0f;
+				colourData[index++] = 1.0f;
+				colourData[index++] = 1.0f;
+				colourData[index++] = 1.0f;
+			}
+			else
+			{
+				colourData[index++] = biomes[0]->colour[0];
+				colourData[index++] = biomes[0]->colour[1];
+				colourData[index++] = biomes[0]->colour[2];
+				colourData[index++] = biomes[0]->colour[3];
 			}
 		}
 	}
-	else
-	{
-		for(unsigned int row = 0; row < this->pointsCount - 1; row++)
-		{
-			for(unsigned int col = 0; col < this->pointsCount - 1; col++)
-			{
-				colourData[index++] = this->biome->colour[0];
-				colourData[index++] = this->biome->colour[1];
-				colourData[index++] = this->biome->colour[2];
-				colourData[index++] = this->biome->colour[3];
-			}
-		}
-	}
+
 
 	//Delete the Old Buffers(if there are any)
 	this->deleteBuffers();

@@ -275,7 +275,7 @@ void World::maintainTiles(Math::Vector3f* position)
 
 			if(!tile->hasBuffers)
 			{
-				tile->prepareDraw();
+				tile->prepareDraw(this->generator);
 			}
 		}
 	}

@@ -16,6 +16,7 @@
 #include "core/GLCore.hpp"
 #include "core/World.hpp"
 #include "math/Vector3f.hpp"
+#include "resources/Texture.hpp"
 #include "terrain/Generator.hpp"
 #include "terrain/Tile.hpp"
 #include "util/Config.hpp"
@@ -64,6 +65,7 @@ static float* materialDiffuse;
 static float* materialSpecular;
 static float* materialShininess;
 
+static Resources::Texture* texture;
 
 void GLCore::init(int argc, char** argv)
 {	
@@ -173,6 +175,8 @@ void GLCore::init(int argc, char** argv)
 	drawBoundaries = false;
 
 	world = new World();
+
+	texture = new Resources::Texture("data/textures/snow_01.tga"); 
 }
 
 void GLCore::draw(void)

@@ -99,6 +99,9 @@ void Generator::getClosestCornerBiome(int* regionCoords, Math::Vector3f* positio
 
 	float distance = 0.0f;
 
+	minDistance[0] = FLT_MAX;
+	minDistance[1] = FLT_MAX;
+
 	for(coords[1] = regionCoords[1] - 1;  coords[1] <= regionCoords[1] + 1; coords[1]++)
 	{
 		for(coords[0] = regionCoords[0] - 1; coords[0] <= regionCoords[0] + 1; coords[0]++)
@@ -151,7 +154,7 @@ Tile* Generator::newTile(int x, int z)
 		tile->subDivide();
 	}
 
-	tile->prepareDraw(this);
+	//tile->prepareDraw(this);
 
 	return tile;
 }

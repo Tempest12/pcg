@@ -67,6 +67,21 @@ bool StringLib::contains(std::string* base, const std::string& target)
 }
 
 /**
+ * Checks to see if the given string ends with the second string.
+ * Params:
+ *	const string& base -> The string to search in.
+ *	const string& end  -> What to search for.
+ * Return:
+ *	bool -> Does the base string end with the end string?
+ */
+bool StringLib::endsWith(const std::string& base, const std::string& end)
+{
+	std::string baseEnd = base.substr(base.length() - end.length(), end.length());
+
+	return baseEnd == end;
+}
+
+/**
  *Splits a string by a given delimiter and returns a new array of strings.
  *Params
  *	string* whole -> The String to Split.

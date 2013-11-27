@@ -27,7 +27,7 @@ section generator
 	#Region Stuff:
 	biome_density 1
 
-	transition_size 8.0f
+	transition_size 32.0f
 
 	region_random_bump 3085
 
@@ -60,7 +60,7 @@ section camera
 
 	near_clip 1.0f
 
-	far_clip 600f
+	far_clip 800f
 }
 
 section controls
