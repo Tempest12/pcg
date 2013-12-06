@@ -18,6 +18,7 @@ namespace Core
 	public:
 		static void init(int argc, char** argv);
 		static void draw(void);
+		static void drawSkyBox(void);
 
 		static void functionKeys(int keyCode, int positionX, int positionY);
 		static void keyboard(unsigned char keyCode, int positionX, int positionY);

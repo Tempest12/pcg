@@ -35,21 +35,21 @@ void TgaLoader::loadFromFile(const std::string& fileName, Texture* texture)
 			unsigned char green;
 			unsigned char blue;
 
-			unsigned int size = texture->width * texture->height * 4;
+			unsigned int size = texture->width * texture->height * 3;
 			texture->pixels = new float[size];
 
 			float converter = 1.0f / 255.0f;
 
-			for(unsigned int index = 0; index < size; index+= 4)
+			for(unsigned int index = 0; index < size;)
 			{
-				file >> blue;
-				file >> green;
-				file >> red;
+				file.read((char*)&blue, 1);
+				file.read((char*)&green, 1);
+				file.read((char*)&red, 1);
 
-				texture->pixels[index] = red * converter;
-				texture->pixels[index] = green * converter;
-				texture->pixels[index] = blue * converter;
-				texture->pixels[index] = 1.0f;
+				texture->pixels[index++] = red * converter;
+				texture->pixels[index++] = green * converter;
+				texture->pixels[index++] = blue * converter;
+				texture->pixels[index++] = 1.0f;
 			}
 
 			break;
@@ -67,17 +67,17 @@ void TgaLoader::loadFromFile(const std::string& fileName, Texture* texture)
 
 			float converter = 1.0f / 255.0f;
 
-			for(unsigned int index = 0; index < size; index+= 4)
+			for(unsigned int index = 0; index < size;)
 			{
-				file >> blue;
-				file >> green;
-				file >> red;
-				file >> alpha;
+				file.read((char*)&blue, 1);
+				file.read((char*)&green, 1);
+				file.read((char*)&red, 1);
+				file.read((char*)&alpha, 1);
 
-				texture->pixels[index] = red * converter;
-				texture->pixels[index] = green * converter;
-				texture->pixels[index] = blue * converter;
-				texture->pixels[index] = alpha * converter;
+				texture->pixels[index++] = red * converter;
+				texture->pixels[index++] = green * converter;
+				texture->pixels[index++] = blue * converter;
+				texture->pixels[index++] = alpha * converter;
 			}
 
 			break;
@@ -87,5 +87,15 @@ void TgaLoader::loadFromFile(const std::string& fileName, Texture* texture)
 			std::cout << "Texture " << fileName << " pixel is size is: " << fileHeader.pixelSize << " which the loader doesn't support." << std::endl;
 			Main::die("Unable to load texture: " + fileName +  ".");
 			break;
+	}
+
+	unsigned int size = texture->width * texture->height * 4;
+
+	for(unsigned int index = 0; index < size; index++)
+	{
+		if(texture->pixels[index] > 1.0)
+		{
+			std::cout << "Fuck." << std::endl;
+		}
 	}
 }

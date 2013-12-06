@@ -27,7 +27,7 @@ section generator
 	#Region Stuff:
 	biome_density 1
 
-	transition_size 32.0f
+	transition_size 30.0f
 
 	region_random_bump 3085
 
@@ -36,7 +36,7 @@ section generator
 	mountain_chance 0.33f
 	snow_chance     0.00f
 
-	desert_height    15.0
+	desert_height   15.0
 	mountain_height 15.0
 }
 

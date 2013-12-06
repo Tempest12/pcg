@@ -1,5 +1,8 @@
 #include <iostream>
 
+#include <GL/glew.h>
+#include <GL/glut.h> 
+
 #include "main/Main.hpp"
 #include "resources/Texture.hpp"
 #include "resources/TgaLoader.hpp"
@@ -18,9 +21,35 @@ Texture::Texture(const std::string& fileName)
 	{
 		Main::die("The following type of file cannot current be loaded as a texture: " + fileName);
 	}
+
+	this->hasData = true;
+
+	this->uploadToGpu();
 }
 
 Texture::~Texture()
 {
 
+}
+
+void Texture::uploadToGpu()
+{
+	//Load the Texture into GPU mem:
+	glGenTextures(1, &id);
+	
+	glBindTexture(GL_TEXTURE_2D, id);
+	
+	glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE ); 
+
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);	
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, this->width, this->height, GL_RGBA, GL_FLOAT, this->pixels);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	
+	this->loaded = true;
 }

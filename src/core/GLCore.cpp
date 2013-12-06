@@ -65,7 +65,11 @@ static float* materialDiffuse;
 static float* materialSpecular;
 static float* materialShininess;
 
-static Resources::Texture* texture;
+static Resources::Texture* skyBack;
+static Resources::Texture* skyFront;
+static Resources::Texture* skyRight;
+static Resources::Texture* skyLeft;
+static Resources::Texture* skyTop;
 
 void GLCore::init(int argc, char** argv)
 {	
@@ -135,6 +139,7 @@ void GLCore::init(int argc, char** argv)
 	glEnable(GL_COLOR_MATERIAL);
 
 	glEnable(GL_LIGHT0);
+	glEnable(GL_TEXTURE_2D);
 
 	//Speaking of lights let's load the light and material colours here:
 	ambientLighting = new float[4];
@@ -176,7 +181,11 @@ void GLCore::init(int argc, char** argv)
 
 	world = new World();
 
-	texture = new Resources::Texture("data/textures/snow_01.tga"); 
+	skyBack = new Resources::Texture("data/textures/sky_back.tga");
+	skyFront = new Resources::Texture("data/textures/snow_01.tga");
+	skyLeft = new Resources::Texture("data/textures/sky_left.tga");
+	skyRight = new Resources::Texture("data/textures/sky_right.tga");
+	skyTop = new Resources::Texture("data/textures/sky_top.tga");
 }
 
 void GLCore::draw(void)
@@ -190,10 +199,6 @@ void GLCore::draw(void)
 	camera->applyTransformation();
 
 	//Lighting Stuff:
-	//glMaterialfv(GL_FRONT, GL_SPECULAR, materialSpecular);
-	//glMaterialfv(GL_FRONT, GL_SHININESS, materialShininess);
-	//glMaterialfv(GL_FRONT, GL_DIFFUSE, materialDiffuse);
-	
 	glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, materialDiffuse);
 	glLightfv(GL_LIGHT0, GL_SPECULAR, materialSpecular);
@@ -201,11 +206,86 @@ void GLCore::draw(void)
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientLighting);
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+	drawSkyBox();
+
 	world->maintainRegions(&camera->position);
 	world->maintainTiles(&camera->position);
 	world->draw(camera, wiredTiles, drawBoundaries);
 
 	glutSwapBuffers();
+}
+
+void GLCore::drawSkyBox()
+{
+	float fronBotLeft[3];
+	float fronBotRigh[3];
+	float fronTopLeft[3];
+	float fronTopRigh[3];
+
+	float backBotLeft[3];
+	float backBotRigh[3];
+	float backTopLeft[3];
+	float backTopRigh[3];
+		
+	//Front 4 points:
+	fronBotLeft[0] = camera->position.x - 2.0f;
+	fronBotLeft[1] = camera->position.y - 2.0f;
+	fronBotLeft[2] = camera->position.z - 2.0f;
+
+	fronBotRigh[0] = camera->position.x + 2.0f;
+	fronBotRigh[1] = camera->position.y - 2.0f;
+	fronBotRigh[2] = camera->position.z - 2.0f;
+
+	fronTopLeft[0] = camera->position.x - 2.0f;
+	fronTopLeft[1] = camera->position.y + 2.0f;
+	fronTopLeft[2] = camera->position.z - 2.0f;
+
+	fronTopRigh[0] = camera->position.x + 2.0f;
+	fronTopRigh[1] = camera->position.y + 2.0f;
+	fronTopRigh[2] = camera->position.z - 2.0f;
+
+	//Back 4 Points:
+	backBotLeft[0] = camera->position.x - 2.0f;
+	backBotLeft[1] = camera->position.y - 2.0f;
+	backBotLeft[2] = camera->position.z + 2.0f;
+
+	backBotRigh[0] = camera->position.x + 2.0f;
+	backBotRigh[1] = camera->position.y - 2.0f;
+	backBotRigh[2] = camera->position.z + 2.0f;
+
+	backTopLeft[0] = camera->position.x - 2.0f;
+	backTopLeft[1] = camera->position.y + 2.0f;
+	backTopLeft[2] = camera->position.z + 2.0f;
+
+	backTopRigh[0] = camera->position.x + 2.0f;
+	backTopRigh[1] = camera->position.y + 2.0f;
+	backTopRigh[2] = camera->position.z + 2.0f;
+
+
+	glPushMatrix();
+	glBegin(GL_QUADS);
+	//glEnable(GL_TEXTURE_2D);
+	//glDisable(GL_LIGHTING);
+
+		glBindTexture(GL_TEXTURE_2D, skyFront->id);
+		glNormal3f(0.0f, 1.0f, 0.0f);
+		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+		
+		//Front:
+		glTexCoord2d(0.0f, 0.0f); glVertex3fv(fronBotLeft);
+		glTexCoord2d(1.0f, 0.0f); glVertex3fv(fronBotRigh);
+		glTexCoord2d(1.0f, 1.0f); glVertex3fv(fronTopRigh);
+		glTexCoord2d(0.0f, 1.0f); glVertex3fv(fronTopLeft);
+
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+	//glEnable(GL_LIGHTING);
+	//glDisable(GL_TEXTURE_2D);
+	glEnd();
+	glPopMatrix();
+
+	glClear(GL_DEPTH_BUFFER_BIT);
 }
 
 void GLCore::functionKeys(int keyCode, int positionX, int positionY)

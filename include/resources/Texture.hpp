@@ -10,7 +10,7 @@ namespace Resources
 	//Variables:
 	public:
 
-		int id;
+		unsigned int id;
 
 		int width;
 		int height;
@@ -28,6 +28,8 @@ namespace Resources
 
 		Texture(const std::string& fileName);
 		~Texture();
+
+		void uploadToGpu(void);
 
 	protected:
 	private:

@@ -373,6 +373,16 @@ void Tile::prepareDraw(Generator* generator)
 
 	float halfTransitionSize = generator->transitionSize / 2.0f;
 
+	Math::Vector3f one = Math::Vector3f();
+	Math::Vector3f two = Math::Vector3f();
+	Math::Vector3f pPrime = Math::Vector3f();
+
+	float L2 = 0.0f;
+	float t = 0.0f;
+	float diff = 0.0f;
+	float dOne = 0.0f;
+	float dTwo = 0.0f;
+
 	for(unsigned int row = 0; row < this->pointsCount - 1; row++)
 	{
 		for(unsigned int col = 0; col < this->pointsCount - 1; col++)
@@ -386,7 +396,25 @@ void Tile::prepareDraw(Generator* generator)
 
 			generator->getClosestCornerBiome(regionCoords, &vertexPosition, biomes, distances);
 
-			float diff = distances[1] - distances[0];
+			L2 = biomes[0]->position->distanceSquared(biomes[1]->position);
+
+			one = Math::Vector3f(&vertexPosition);
+			two = Math::Vector3f(biomes[1]->position);
+
+			one.subtract(biomes[0]->position);
+			two.subtract(biomes[0]->position);
+
+			t = one.dotProduct(&two) / L2;
+
+			pPrime = Math::Vector3f(biomes[1]->position);
+			pPrime.subtract(biomes[0]->position);
+			pPrime.scale(t);
+			pPrime.add(biomes[0]->position);
+
+			dOne = pPrime.distance(biomes[0]->position);
+			dTwo = pPrime.distance(biomes[1]->position);
+
+			diff = abs(dOne - dTwo);
 
 			if(diff <= halfTransitionSize)
 			{
