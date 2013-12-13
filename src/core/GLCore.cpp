@@ -140,6 +140,7 @@ void GLCore::init(int argc, char** argv)
 
 	glEnable(GL_LIGHT0);
 	glEnable(GL_TEXTURE_2D);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
 	//Speaking of lights let's load the light and material colours here:
 	ambientLighting = new float[4];
@@ -200,7 +201,7 @@ void GLCore::draw(void)
 
 	//Lighting Stuff:
 	glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, materialDiffuse);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE,  materialDiffuse);
 	glLightfv(GL_LIGHT0, GL_SPECULAR, materialSpecular);
 	
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientLighting);
@@ -264,24 +265,27 @@ void GLCore::drawSkyBox()
 
 	glPushMatrix();
 	glBegin(GL_QUADS);
-	//glEnable(GL_TEXTURE_2D);
+	glEnable(GL_TEXTURE_2D);
 	//glDisable(GL_LIGHTING);
+	glDisable(GL_COLOR_MATERIAL);
+
 
 		glBindTexture(GL_TEXTURE_2D, skyFront->id);
 		glNormal3f(0.0f, 1.0f, 0.0f);
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 		
 		//Front:
-		glTexCoord2d(0.0f, 0.0f); glVertex3fv(fronBotLeft);
+		glTexCoord2d(1.0f, 1.0f); glVertex3fv(fronBotLeft);
 		glTexCoord2d(1.0f, 0.0f); glVertex3fv(fronBotRigh);
-		glTexCoord2d(1.0f, 1.0f); glVertex3fv(fronTopRigh);
+		glTexCoord2d(0.0f, 0.0f); glVertex3fv(fronTopRigh);
 		glTexCoord2d(0.0f, 1.0f); glVertex3fv(fronTopLeft);
 
 
-		glBindTexture(GL_TEXTURE_2D, 0);
+		//glBindTexture(GL_TEXTURE_2D, 0);
 
+	glEnable(GL_COLOR_MATERIAL);
 	//glEnable(GL_LIGHTING);
-	//glDisable(GL_TEXTURE_2D);
+	glDisable(GL_TEXTURE_2D);
 	glEnd();
 	glPopMatrix();
 
