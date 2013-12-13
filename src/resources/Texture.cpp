@@ -34,15 +34,13 @@ Texture::~Texture()
 
 void Texture::uploadToGpu()
 {
-	//glEnable(GL_TEXTURE_2D);
-
 	//Load the Texture into GPU mem:
-	glGenTextures(1, &id);
+	glGenTextures(1, &this->id);
 	
-	glBindTexture(GL_TEXTURE_2D, id);
+	glBindTexture(GL_TEXTURE_2D, this->id);
 
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 	
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -50,11 +48,7 @@ void Texture::uploadToGpu()
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, this->width, this->height, 0, GL_RGBA, GL_FLOAT, this->pixels);
 	//gluBuild2DMipmaps(GL_TEXTURE_2D, 3, this->width, this->height, GL_RGBA, GL_FLOAT, this->pixels);
 
-	std::cout << this->width << " " << this->height << std::endl;
+	glBindTexture(GL_TEXTURE_2D, 0);
 
-	//glBindTexture(GL_TEXTURE_2D, 0);
-	
 	this->loaded = true;
-
-	//glDisable(GL_TEXTURE_2D);
 }

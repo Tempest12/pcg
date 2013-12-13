@@ -183,7 +183,7 @@ void GLCore::init(int argc, char** argv)
 	world = new World();
 
 	skyBack = new Resources::Texture("data/textures/sky_back.tga");
-	skyFront = new Resources::Texture("data/textures/snow_01.tga");
+	skyFront = new Resources::Texture("data/textures/sky_front.tga");
 	skyLeft = new Resources::Texture("data/textures/sky_left.tga");
 	skyRight = new Resources::Texture("data/textures/sky_right.tga");
 	skyTop = new Resources::Texture("data/textures/sky_top.tga");
@@ -209,9 +209,11 @@ void GLCore::draw(void)
 
 	drawSkyBox();
 
+	glDisable(GL_TEXTURE_2D);
 	world->maintainRegions(&camera->position);
 	world->maintainTiles(&camera->position);
 	world->draw(camera, wiredTiles, drawBoundaries);
+	glEnable(GL_TEXTURE_2D);
 
 	glutSwapBuffers();
 }
@@ -264,28 +266,20 @@ void GLCore::drawSkyBox()
 
 
 	glPushMatrix();
+
+	//glBindTexture(GL_TEXTURE_2D, 0);
+	glBindTexture(GL_TEXTURE_2D, skyFront->id);
 	glBegin(GL_QUADS);
-	glEnable(GL_TEXTURE_2D);
-	//glDisable(GL_LIGHTING);
-	glDisable(GL_COLOR_MATERIAL);
 
-
-		glBindTexture(GL_TEXTURE_2D, skyFront->id);
 		glNormal3f(0.0f, 1.0f, 0.0f);
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 		
 		//Front:
-		glTexCoord2d(1.0f, 1.0f); glVertex3fv(fronBotLeft);
+		glTexCoord2d(0.0f, 0.0f); glVertex3fv(fronBotLeft);
 		glTexCoord2d(1.0f, 0.0f); glVertex3fv(fronBotRigh);
-		glTexCoord2d(0.0f, 0.0f); glVertex3fv(fronTopRigh);
+		glTexCoord2d(1.0f, 1.0f); glVertex3fv(fronTopRigh);
 		glTexCoord2d(0.0f, 1.0f); glVertex3fv(fronTopLeft);
 
-
-		//glBindTexture(GL_TEXTURE_2D, 0);
-
-	glEnable(GL_COLOR_MATERIAL);
-	//glEnable(GL_LIGHTING);
-	glDisable(GL_TEXTURE_2D);
 	glEnd();
 	glPopMatrix();
 
