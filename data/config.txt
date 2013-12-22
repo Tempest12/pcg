@@ -101,9 +101,14 @@ section colours
 	snow_alpha     1.0f
 
 	region_red     0.0f
-	region_green   1.0f
+	region_green   0.0f
 	region_blue    0.0f
 	region_alpha   1.0f
+
+	tile_boundary_red   0.0
+	tile_boundary_green 1.0
+	tile_boundary_blue  1.0
+	tile_boundary_alpha 1.0
 }
 
 section lighting

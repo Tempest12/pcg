@@ -59,6 +59,11 @@ Tile::Tile(int xCoord, int zCoord, float size, Generator* generator)
 	this->indexCount  = 6;
 	this->vertexCount = 4;
 
+	this->boundaryColor[0] = Util::Config::convertSettingToFloat("colours", "tile_boundary_red");
+	this->boundaryColor[1] = Util::Config::convertSettingToFloat("colours", "tile_boundary_green");
+	this->boundaryColor[2] = Util::Config::convertSettingToFloat("colours", "tile_boundary_blue");
+	this->boundaryColor[3] = Util::Config::convertSettingToFloat("colours", "tile_boundary_alpha");
+
 	//Determine Biome:
 	//generator->getClosestBiome(this);
 
@@ -86,6 +91,22 @@ Tile::~Tile()
 
 void Tile::draw(bool wired, bool drawBoundaries)
 {
+	//Draw boundaries: (For debuging purposes
+	if(drawBoundaries)
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+		glBegin(GL_QUADS);
+
+			glColor4fv(this->boundaryColor);
+			glVertex3f((this->xCoord - 0.5) * this->size, 1.0, (this->zCoord - 0.5) * this->size);
+			glVertex3f((this->xCoord + 0.5) * this->size, 1.0, (this->zCoord - 0.5) * this->size);
+			glVertex3f((this->xCoord + 0.5) * this->size, 1.0, (this->zCoord + 0.5) * this->size);
+			glVertex3f((this->xCoord - 0.5) * this->size, 1.0, (this->zCoord + 0.5) * this->size);
+
+		glEnd();
+	}
+
 	if(wired)
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -416,21 +437,31 @@ void Tile::prepareDraw(Generator* generator)
 
 			diff = abs(dOne - dTwo);
 
-			if(diff <= halfTransitionSize)
+			/*if(diff <= halfTransitionSize)
 			{
-				float factor = diff / halfTransitionSize * 0.5f;
+				float factor = (diff + halfTransitionSize) / generator->transitionSize;
 
-				/*colourData[index++] = factor * biomes[1]->colour[0] + (1.0f - factor) * biomes[0]->colour[0];
-				colourData[index++] = factor * biomes[1]->colour[1] + (1.0f - factor) * biomes[0]->colour[1];
-				colourData[index++] = factor * biomes[1]->colour[2] + (1.0f - factor) * biomes[0]->colour[2];
-				colourData[index++] = factor * biomes[1]->colour[3] + (1.0f - factor) * biomes[0]->colour[3];*/
+				if(dOne <= dTwo)
+				{
+					colourData[index++] = factor * biomes[0]->colour[0] + (1.0f - factor) * biomes[1]->colour[0];
+					colourData[index++] = factor * biomes[0]->colour[1] + (1.0f - factor) * biomes[1]->colour[1];
+					colourData[index++] = factor * biomes[0]->colour[2] + (1.0f - factor) * biomes[1]->colour[2];
+					colourData[index++] = factor * biomes[0]->colour[3] + (1.0f - factor) * biomes[1]->colour[3];
+				}
+				else
+				{
+					colourData[index++] = factor * biomes[1]->colour[0] + (1.0f - factor) * biomes[0]->colour[0];
+					colourData[index++] = factor * biomes[1]->colour[1] + (1.0f - factor) * biomes[0]->colour[1];
+					colourData[index++] = factor * biomes[1]->colour[2] + (1.0f - factor) * biomes[0]->colour[2];
+					colourData[index++] = factor * biomes[1]->colour[3] + (1.0f - factor) * biomes[0]->colour[3];
+				}
 
 				colourData[index++] = 1.0f;
 				colourData[index++] = 1.0f;
 				colourData[index++] = 1.0f;
 				colourData[index++] = 1.0f;
 			}
-			else
+			else*/
 			{
 				colourData[index++] = biomes[0]->colour[0];
 				colourData[index++] = biomes[0]->colour[1];

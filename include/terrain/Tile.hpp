@@ -55,6 +55,8 @@ namespace Terrain
 			// 3 -> Colour Buffer
 		bool hasBuffers;
 
+		float boundaryColor[4];
+
 		//Subdividing Data
 		int round;
 

@@ -9,6 +9,7 @@
 #include "main/Main.hpp"
 #include "terrain/Tile.hpp"
 #include "util/Config.hpp"
+#include "util/HashTypes.hpp"
 #include "util/Log.hpp"
 
 using namespace Core;
@@ -123,10 +124,10 @@ void World::maintainRegions(Math::Vector3f* position)
 	std::vector<int> keyX = std::vector<int>();
 	std::vector<int> keyZ = std::vector<int>();
 
-	std::unordered_map<int*, Terrain::Region*>::const_iterator target;
+	Util::CoordsToRegionHash::const_iterator target;
 
 	//Mark Regions for deletion:
-	for(std::unordered_map<int*, Terrain::Region*>::const_iterator index = this->regionHash.begin(); index != regionHash.end(); index++)
+	for(Util::CoordsToRegionHash::const_iterator index = this->regionHash.begin(); index != regionHash.end(); index++)
 	{
 		if(index->first[1] >= startRow && index->first[1] <= endRow && 
 		   index->first[0] >= startCol && index->first[1] <= endCol)
@@ -195,10 +196,10 @@ void World::maintainTiles(Math::Vector3f* position)
 	std::vector<int> keyX = std::vector<int>();
 	std::vector<int> keyZ = std::vector<int>();
 
-	std::unordered_map<int*, Terrain::Tile*>::const_iterator target;
-
+	Util::CoordsToTileHash::const_iterator target;
+	
 	//Mark tiles from deletion from the CPU and GPU:
-	for(std::unordered_map<int*, Terrain::Tile*>::const_iterator index = this->tileHash.begin(); index != tileHash.end(); index++)
+	for(Util::CoordsToTileHash::const_iterator index = this->tileHash.begin(); index != tileHash.end(); index++)
 	{
 		//CPU:
 		if(index->first[1] >= cpuStartRow && index->first[1] <= cpuEndRow &&

@@ -182,11 +182,11 @@ void GLCore::init(int argc, char** argv)
 
 	world = new World();
 
-	skyBack = new Resources::Texture("data/textures/sky_back.tga");
-	skyFront = new Resources::Texture("data/textures/sky_front.tga");
-	skyLeft = new Resources::Texture("data/textures/sky_left.tga");
-	skyRight = new Resources::Texture("data/textures/sky_right.tga");
-	skyTop = new Resources::Texture("data/textures/sky_top.tga");
+	skyBack = new Resources::Texture("data/textures/plain_sky_back.tga");
+	skyFront = new Resources::Texture("data/textures/plain_sky_front.tga");
+	skyLeft = new Resources::Texture("data/textures/plain_sky_left.tga");
+	skyRight = new Resources::Texture("data/textures/plain_sky_right.tga");
+	skyTop = new Resources::Texture("data/textures/plain_sky_top.tga");
 }
 
 void GLCore::draw(void)
@@ -264,10 +264,6 @@ void GLCore::drawSkyBox()
 	backTopRigh[1] = camera->position.y + 2.0f;
 	backTopRigh[2] = camera->position.z + 2.0f;
 
-
-	glPushMatrix();
-
-	//glBindTexture(GL_TEXTURE_2D, 0);
 	glBindTexture(GL_TEXTURE_2D, skyFront->id);
 	glBegin(GL_QUADS);
 
@@ -281,7 +277,62 @@ void GLCore::drawSkyBox()
 		glTexCoord2d(0.0f, 1.0f); glVertex3fv(fronTopLeft);
 
 	glEnd();
-	glPopMatrix();
+
+	glBindTexture(GL_TEXTURE_2D, skyRight->id);
+	glBegin(GL_QUADS);
+
+		glNormal3f(0.0f, 1.0f, 0.0f);
+		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+		
+		//Right
+		glTexCoord2d(0.0f, 0.0f); glVertex3fv(fronTopRigh);
+		glTexCoord2d(1.0f, 0.0f); glVertex3fv(backTopRigh);
+		glTexCoord2d(1.0f, 1.0f); glVertex3fv(backBotRigh);
+		glTexCoord2d(0.0f, 1.0f); glVertex3fv(fronBotRigh);
+
+	glEnd();
+
+	glBindTexture(GL_TEXTURE_2D, skyLeft->id);
+	glBegin(GL_QUADS);
+
+		glNormal3f(0.0f, 1.0f, 0.0f);
+		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+		
+		//Left
+		glTexCoord2d(0.0f, 0.0f); glVertex3fv(backTopLeft);
+		glTexCoord2d(1.0f, 0.0f); glVertex3fv(fronTopLeft);
+		glTexCoord2d(1.0f, 1.0f); glVertex3fv(fronBotLeft);
+		glTexCoord2d(0.0f, 1.0f); glVertex3fv(backBotLeft);
+
+	glEnd();
+
+	glBindTexture(GL_TEXTURE_2D, skyBack->id);
+	glBegin(GL_QUADS);
+
+		glNormal3f(0.0f, 1.0f, 0.0f);
+		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+		
+		//Back
+		glTexCoord2d(0.0f, 0.0f); glVertex3fv(backTopRigh);
+		glTexCoord2d(1.0f, 0.0f); glVertex3fv(backTopLeft);
+		glTexCoord2d(1.0f, 1.0f); glVertex3fv(backBotLeft);
+		glTexCoord2d(0.0f, 1.0f); glVertex3fv(backBotRigh);
+
+	glEnd();
+
+	glBindTexture(GL_TEXTURE_2D, skyTop->id);
+	glBegin(GL_QUADS);
+
+		glNormal3f(0.0f, 1.0f, 0.0f);
+		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+		
+		//Top:
+		glTexCoord2d(0.0f, 0.0f); glVertex3fv(backTopLeft);
+		glTexCoord2d(1.0f, 0.0f); glVertex3fv(backTopRigh);
+		glTexCoord2d(1.0f, 1.0f); glVertex3fv(fronTopRigh);
+		glTexCoord2d(0.0f, 1.0f); glVertex3fv(fronTopLeft);
+
+	glEnd();
 
 	glClear(GL_DEPTH_BUFFER_BIT);
 }

@@ -35,7 +35,7 @@ void TgaLoader::loadFromFile(const std::string& fileName, Texture* texture)
 			unsigned char green;
 			unsigned char blue;
 
-			unsigned int size = texture->width * texture->height * 3;
+			unsigned int size = texture->width * texture->height * 4;
 			texture->pixels = new float[size];
 
 			float converter = 1.0f / 255.0f;
@@ -95,7 +95,7 @@ void TgaLoader::loadFromFile(const std::string& fileName, Texture* texture)
 	{
 		if(texture->pixels[index] > 1.0)
 		{
-			std::cout << "Fuck." << std::endl;
+			std::cout << "Whoops pixels value is not correcta." << std::endl;
 		}
 	}
 }
