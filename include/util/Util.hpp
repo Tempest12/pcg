@@ -9,9 +9,9 @@ namespace Util
 	//Variables:
 	public:
 	#ifdef WINDOWS
-		static char fileseparator = '\\';
+		static char fileSeparator = '\\';
 	#else
-		static char fileseparator = '/';
+		static char fileSeparator = '/';
 	#endif
 
 	protected:

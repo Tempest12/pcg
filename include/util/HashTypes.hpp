@@ -4,21 +4,29 @@
 #include <string>
 #include <unordered_map>
 
-#include "util/StringLib.hpp"
-#include "terrain/Region.hpp"
-#include "terrain/Tile.hpp"
-
 //Forward Declarations:
-/*namespace Terrain
+namespace Terrain
 {
 	class Region;
+	class RegionHasher;
+	class RegoinKeyEquals;
+	
 	class Tile;
-
-}*/
-
+    class TileHasher;
+    class TileKeyEquals;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 namespace Util
 {
+    //Forward Declarations:
+    namespace StringLib
+    {
+        class Hasher;
+        class KeyEquals;
+    }
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 	//Basic Types:
 	typedef std::unordered_map<std::string, std::string, StringLib::Hasher, StringLib::KeyEquals> StringToStringHash;
 

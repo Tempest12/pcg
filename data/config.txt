@@ -140,3 +140,14 @@ section lighting
 
 	mat_shininess 0.25f
 }
+
+section sky_box
+{
+    bump 0.01f
+    
+    back  data/textures/plain_sky_back.tga
+    front data/textures/plain_sky_front.tga
+    left  data/textures/plain_sky_left.tga
+    right data/textures/plain_sky_right.tga
+    top   data/textures/plain_sky_top.tga
+}

@@ -71,6 +71,8 @@ static Resources::Texture* skyRight;
 static Resources::Texture* skyLeft;
 static Resources::Texture* skyTop;
 
+static float skyBump;
+
 void GLCore::init(int argc, char** argv)
 {	
 	Util::Config::init();
@@ -103,7 +105,7 @@ void GLCore::init(int argc, char** argv)
     glutInitWindowSize(width, height);
 	glutInitWindowPosition(Util::Config::convertSettingToInt("window", "init_x"), Util::Config::convertSettingToInt("window", "init_y"));
 
-	windowID = glutCreateWindow("Solar Shard");
+	windowID = glutCreateWindow("pcg");
 	glewInit();
 
 	//std::cout << GLEW_OK << " and " << error << std::endl;
@@ -182,11 +184,13 @@ void GLCore::init(int argc, char** argv)
 
 	world = new World();
 
-	skyBack = new Resources::Texture("data/textures/plain_sky_back.tga");
-	skyFront = new Resources::Texture("data/textures/plain_sky_front.tga");
-	skyLeft = new Resources::Texture("data/textures/plain_sky_left.tga");
-	skyRight = new Resources::Texture("data/textures/plain_sky_right.tga");
-	skyTop = new Resources::Texture("data/textures/plain_sky_top.tga");
+    skyBump = Util::Config::convertSettingToFloat("sky_box", "bump");
+
+	skyBack = new Resources::Texture(Util::Config::convertSettingToString("sky_box", "back"));
+	skyFront = new Resources::Texture(Util::Config::convertSettingToString("sky_box", "front"));
+	skyLeft = new Resources::Texture(Util::Config::convertSettingToString("sky_box", "left"));
+	skyRight = new Resources::Texture(Util::Config::convertSettingToString("sky_box", "right"));
+	skyTop = new Resources::Texture(Util::Config::convertSettingToString("sky_box", "top"));
 }
 
 void GLCore::draw(void)
@@ -271,10 +275,10 @@ void GLCore::drawSkyBox()
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 		
 		//Front:
-		glTexCoord2d(0.0f, 0.0f); glVertex3fv(fronBotLeft);
-		glTexCoord2d(1.0f, 0.0f); glVertex3fv(fronBotRigh);
-		glTexCoord2d(1.0f, 1.0f); glVertex3fv(fronTopRigh);
-		glTexCoord2d(0.0f, 1.0f); glVertex3fv(fronTopLeft);
+		glTexCoord2d(0.0f, 0.0f); glVertex3f(fronBotLeft[0] - skyBump, fronBotLeft[1] - skyBump, fronBotLeft[2]);
+		glTexCoord2d(1.0f, 0.0f); glVertex3f(fronBotRigh[0] + skyBump, fronBotRigh[1] - skyBump, fronBotRigh[2]);
+		glTexCoord2d(1.0f, 1.0f); glVertex3f(fronTopRigh[0] + skyBump, fronTopRigh[1] + skyBump, fronTopRigh[2]);
+		glTexCoord2d(0.0f, 1.0f); glVertex3f(fronTopLeft[0] - skyBump, fronTopLeft[1] + skyBump, fronTopLeft[2]);
 
 	glEnd();
 
@@ -285,10 +289,10 @@ void GLCore::drawSkyBox()
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 		
 		//Right
-		glTexCoord2d(0.0f, 0.0f); glVertex3fv(fronTopRigh);
-		glTexCoord2d(1.0f, 0.0f); glVertex3fv(backTopRigh);
-		glTexCoord2d(1.0f, 1.0f); glVertex3fv(backBotRigh);
-		glTexCoord2d(0.0f, 1.0f); glVertex3fv(fronBotRigh);
+		glTexCoord2d(0.0f, 0.0f); glVertex3f(fronTopRigh[0], fronTopRigh[1] + skyBump, fronTopRigh[2] - skyBump);
+		glTexCoord2d(1.0f, 0.0f); glVertex3f(backTopRigh[0], backTopRigh[1] + skyBump, backTopRigh[2] + skyBump);
+		glTexCoord2d(1.0f, 1.0f); glVertex3f(backBotRigh[0], backBotRigh[1] - skyBump, backBotRigh[2] + skyBump);
+		glTexCoord2d(0.0f, 1.0f); glVertex3f(fronBotRigh[0], fronBotRigh[1] - skyBump, fronBotRigh[2] - skyBump);
 
 	glEnd();
 
@@ -299,10 +303,10 @@ void GLCore::drawSkyBox()
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 		
 		//Left
-		glTexCoord2d(0.0f, 0.0f); glVertex3fv(backTopLeft);
-		glTexCoord2d(1.0f, 0.0f); glVertex3fv(fronTopLeft);
-		glTexCoord2d(1.0f, 1.0f); glVertex3fv(fronBotLeft);
-		glTexCoord2d(0.0f, 1.0f); glVertex3fv(backBotLeft);
+		glTexCoord2d(0.0f, 0.0f); glVertex3f(backTopLeft[0], backTopLeft[1] + skyBump, backTopLeft[2] + skyBump);
+		glTexCoord2d(1.0f, 0.0f); glVertex3f(fronTopLeft[0], fronTopLeft[1] + skyBump, fronTopLeft[2] - skyBump);
+		glTexCoord2d(1.0f, 1.0f); glVertex3f(fronBotLeft[0], fronBotLeft[1] - skyBump, fronBotLeft[2] - skyBump);
+		glTexCoord2d(0.0f, 1.0f); glVertex3f(backBotLeft[0], backBotLeft[1] - skyBump, backBotLeft[2] + skyBump);
 
 	glEnd();
 
@@ -313,10 +317,10 @@ void GLCore::drawSkyBox()
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 		
 		//Back
-		glTexCoord2d(0.0f, 0.0f); glVertex3fv(backTopRigh);
-		glTexCoord2d(1.0f, 0.0f); glVertex3fv(backTopLeft);
-		glTexCoord2d(1.0f, 1.0f); glVertex3fv(backBotLeft);
-		glTexCoord2d(0.0f, 1.0f); glVertex3fv(backBotRigh);
+		glTexCoord2d(0.0f, 0.0f); glVertex3f(backTopRigh[0] + skyBump, backTopRigh[1] + skyBump, backTopRigh[2]);
+		glTexCoord2d(1.0f, 0.0f); glVertex3f(backTopLeft[0] - skyBump, backTopLeft[1] + skyBump, backTopLeft[2]);
+		glTexCoord2d(1.0f, 1.0f); glVertex3f(backBotLeft[0] - skyBump, backBotLeft[1] - skyBump, backBotLeft[2]);
+		glTexCoord2d(0.0f, 1.0f); glVertex3f(backBotRigh[0] + skyBump, backBotRigh[1] - skyBump, backBotRigh[2]);
 
 	glEnd();
 
@@ -327,10 +331,10 @@ void GLCore::drawSkyBox()
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 		
 		//Top:
-		glTexCoord2d(0.0f, 0.0f); glVertex3fv(backTopLeft);
-		glTexCoord2d(1.0f, 0.0f); glVertex3fv(backTopRigh);
-		glTexCoord2d(1.0f, 1.0f); glVertex3fv(fronTopRigh);
-		glTexCoord2d(0.0f, 1.0f); glVertex3fv(fronTopLeft);
+		glTexCoord2d(0.0f, 0.0f); glVertex3f(backTopLeft[0] - skyBump, backTopLeft[1], backTopLeft[2] + skyBump);
+		glTexCoord2d(1.0f, 0.0f); glVertex3f(backTopRigh[0] + skyBump, backTopRigh[1], backTopRigh[2] + skyBump);
+		glTexCoord2d(1.0f, 1.0f); glVertex3f(fronTopRigh[0] + skyBump, fronTopRigh[1], fronTopRigh[2] - skyBump);
+		glTexCoord2d(0.0f, 1.0f); glVertex3f(fronTopLeft[0] - skyBump, fronTopLeft[1], fronTopLeft[2] - skyBump);
 
 	glEnd();
 
