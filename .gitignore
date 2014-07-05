@@ -13,5 +13,15 @@
 *.a
 
 #CMake stuff:
-
 *.cmake
+CMakeCache.txt
+CMakeFiles/*
+Makefile
+src/Makefile
+src/CMakeFiles
+
+#Binary files:
+pcg
+
+#Ignore program outputs:
+log.txt
