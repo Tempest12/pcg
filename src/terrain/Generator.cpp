@@ -158,3 +158,21 @@ Tile* Generator::newTile(int x, int z)
 
 	return tile;
 }
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//                                                                                                                           //
+//                                                         Static:                                                           //
+//                                                                                                                           //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Generator* Generator::generator = NULL;
+
+void Generator::initGenerator(Util::CoordsToRegionHash* regionMap)
+{
+
+}
+
+Generator* Generator::getGenerator(void)
+{
+    return Generator::generator;
+}
+

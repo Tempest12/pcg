@@ -27,7 +27,7 @@ namespace Resources
 	public:
 
 		Texture(const std::string& fileName);
-		~Texture();
+		~Texture(void);
 
 		void uploadToGpu(void);
 

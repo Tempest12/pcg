@@ -89,13 +89,13 @@ namespace Terrain
 		unsigned int numberOfPoints(int level);
 		unsigned int vertexBufferIndex(unsigned int row, unsigned int col, unsigned int coordinate);
 		
-	//Static 
-	//Variables
+	//Static Variables
 	public:
 		static float kValue;
 		static float hValue;
 		static int randomBump;
-
+    
+    protected:
 	private:
 		static int bufferCount;
 
@@ -103,7 +103,7 @@ namespace Terrain
 		static int primeTwo;
 
 
-	//Methods:
+	//Static Functions:
 	public:
 
 		//static Biome* getClosestBiome(int xCoord, int zCoord, Util::CoordsToRegionHash* regionHash);
@@ -111,7 +111,7 @@ namespace Terrain
 		static void init(void);
 		static float middleHeight(int xCoord, int zCoord);
 
-
+    protected:
 	private:
 	};
 
