@@ -1,6 +1,6 @@
 #author Shane del Solar
 
-cmake_minimum_required(VERSION 2.0)
+cmake_minimum_required(VERSION 3.0)
 
 project(pcg)
 set(CMAKE_CXX_COMPILIER g++)
@@ -14,6 +14,7 @@ set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -pedantic -O0 -g")
 
 add_executable(pcg ${SOURCES})
 
+set(OpenGL_GL_PREFERENCE LEGACY)
 find_package(OpenGL REQUIRED)
 find_package(GLUT REQUIRED)
 find_package(GLEW REQUIRED)

@@ -15,14 +15,14 @@ section generator
 
 	h_value 1.365f
 
-	height_scale 0.0f
+	height_scale 35.0f
 
 	tile_size 30.0f
 	region_size 300.0f
 
 	subdivisions 4
 
-	random_subdivide no
+	random_subdivide yes
 
 	#Region Stuff:
 	biome_density 1
@@ -42,7 +42,7 @@ section generator
 
 section render
 {
-	smooth_shading no
+	smooth_shading yes
 
 	cpu_boundary_size 40
 	render_boundary_size 35
